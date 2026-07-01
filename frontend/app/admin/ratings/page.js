@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import {
@@ -9,6 +8,12 @@ import {
 } from 'react-icons/hi';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
+function getAuth() {
+  if (typeof window === 'undefined') return {};
+  const token = localStorage.getItem('token');
+  return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+}
 
 export default function AdminRatings() {
   const [ratings, setRatings] = useState([]);
@@ -20,7 +25,7 @@ export default function AdminRatings() {
   const fetchRatings = async () => {
     try {
       setIsLoading(true);
-      const res = await axios.get(`${API_URL}/ratings`);
+      const res = await axios.get(`${API_URL}/ratings`, getAuth());
       setRatings(res.data.data || []);
     } catch (error) {
       console.error('Ratings fetch error:', error);
@@ -32,7 +37,7 @@ export default function AdminRatings() {
   const deleteRating = async (id) => {
     if (!confirm('Delete this rating?')) return;
     try {
-      await axios.delete(`${API_URL}/ratings/${id}`);
+      await axios.delete(`${API_URL}/ratings/${id}`, getAuth());
       toast.success('Rating deleted');
       fetchRatings();
     } catch (error) {
@@ -44,7 +49,7 @@ export default function AdminRatings() {
     if (!confirm('Delete ALL ratings? This cannot be undone.')) return;
     try {
       const deletePromises = ratings.map(r =>
-        axios.delete(`${API_URL}/ratings/${r._id}`)
+        axios.delete(`${API_URL}/ratings/${r._id}`, getAuth())
       );
       await Promise.all(deletePromises);
       toast.success('All ratings deleted');
@@ -68,7 +73,7 @@ export default function AdminRatings() {
 
   return (
     <div className="min-h-screen pt-20 pb-10 px-4 max-w-7xl mx-auto">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+      <div className="mb-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
@@ -90,9 +95,9 @@ export default function AdminRatings() {
             </button>
           </div>
         </div>
-      </motion.div>
+      </div>
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+      <div
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3">
@@ -142,9 +147,9 @@ export default function AdminRatings() {
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
+      <div
         className="mb-6">
         <div className="relative">
           <HiSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -154,12 +159,12 @@ export default function AdminRatings() {
                        rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent
                        placeholder:text-gray-400 transition-all" />
         </div>
-      </motion.div>
+      </div>
 
       {isLoading ? (
         <div className="flex justify-center py-20"><div className="loading-spinner w-10 h-10" /></div>
       ) : filteredRatings.length === 0 ? (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+        <div
           className="text-center py-20 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700">
           <HiStar className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
@@ -168,9 +173,9 @@ export default function AdminRatings() {
           <p className="text-gray-500 dark:text-gray-400">
             {searchQuery ? 'Try a different search term' : 'Ratings will appear here once users rate panels'}
           </p>
-        </motion.div>
+        </div>
       ) : (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+        <div
           className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -264,7 +269,7 @@ export default function AdminRatings() {
               </tbody>
             </table>
           </div>
-        </motion.div>
+        </div>
       )}
     </div>
   );

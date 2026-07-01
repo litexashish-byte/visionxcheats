@@ -2,8 +2,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import { MaintenanceProvider } from '@/context/MaintenanceContext';
 import { SiteSettingsProvider } from '@/context/SiteSettingsContext';
 import MaintenanceWrapper from '@/components/MaintenanceWrapper';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import ConditionalLayout from '@/components/ConditionalLayout';
 import { Toaster } from 'react-hot-toast';
 import ParticlesBackground from '@/components/ParticlesBackground';
 import SplashWrapper from '@/components/SplashWrapper';
@@ -44,11 +43,9 @@ export default function RootLayout({ children }) {
                 <SplashWrapper>
                   <MaintenanceWrapper>
                     <div className="flex flex-col min-h-screen relative z-10">
-                      <Header />
-                      <main className="flex-1 relative z-10">
+                      <ConditionalLayout>
                         {children}
-                      </main>
-                      <Footer />
+                      </ConditionalLayout>
                     </div>
                   </MaintenanceWrapper>
                 </SplashWrapper>

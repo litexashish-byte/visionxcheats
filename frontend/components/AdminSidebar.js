@@ -19,6 +19,7 @@ import {
   HiStar,
   HiUserGroup,
   HiOutlineChip,
+  HiCurrencyDollar,
 } from 'react-icons/hi';
 
 const sidebarLinks = [
@@ -26,6 +27,7 @@ const sidebarLinks = [
   { href: '/admin/users', label: 'Users', icon: HiUsers, gradient: 'from-green-400 to-green-600' },
   { href: '/admin/free-panels', label: 'Free Panels', icon: HiCube, gradient: 'from-cyan-400 to-cyan-600' },
   { href: '/admin/paid-panels', label: 'Paid Panels', icon: HiShoppingBag, gradient: 'from-amber-400 to-amber-600' },
+  { href: '/admin/reselling', label: 'Reselling', icon: HiCurrencyDollar, gradient: 'from-purple-400 to-pink-600' },
   { href: '/admin/resellers', label: 'Resellers', icon: HiUserGroup, gradient: 'from-purple-400 to-pink-600' },
   { href: '/admin/uids', label: 'UIDs', icon: HiOutlineChip, gradient: 'from-teal-400 to-teal-600' },
   { href: '/admin/licenses', label: 'Licenses', icon: HiKey, gradient: 'from-purple-400 to-purple-600' },

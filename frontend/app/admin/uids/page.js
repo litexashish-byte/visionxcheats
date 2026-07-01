@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { HiOutlineChip, HiBan, HiCheckCircle, HiTrash, HiRefresh, HiPlus, HiX, HiSearch } from 'react-icons/hi';
 import toast, { Toaster } from 'react-hot-toast';
@@ -202,10 +201,10 @@ export default function AdminUIDsPage() {
       </div>
 
       {/* Add UID Modal */}
-      <AnimatePresence>
+      <>
         {showAddModal && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setShowAddModal(false)}>
-            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="glass-card rounded-2xl p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setShowAddModal(false)}>
+            <div className="glass-card rounded-2xl p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white">Add UID Directly</h3>
                 <button onClick={() => setShowAddModal(false)} className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"><HiX className="w-5 h-5" /></button>
@@ -237,10 +236,10 @@ export default function AdminUIDsPage() {
                   {addLoading ? 'Adding...' : 'Add UID'}
                 </button>
               </form>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
+      </>
     </div>
   );
 }

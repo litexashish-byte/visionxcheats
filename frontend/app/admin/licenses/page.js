@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import {
   HiKey, HiPlus, HiBan, HiCheck, HiClipboardCopy,
@@ -10,6 +9,12 @@ import {
 import toast from 'react-hot-toast';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
+function getAuth() {
+  if (typeof window === 'undefined') return {};
+  const token = localStorage.getItem('token');
+  return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+}
 
 export default function AdminLicenses() {
   const [licenses, setLicenses] = useState([]);
@@ -22,7 +27,7 @@ export default function AdminLicenses() {
 
   const fetchLicenses = async () => {
     try {
-      const res = await axios.get(`${API_URL}/licenses`);
+      const res = await axios.get(`${API_URL}/licenses`, getAuth());
       setLicenses(res.data.data || []);
     } catch (error) { console.log('Failed to fetch'); }
     finally { setIsLoading(false); }
@@ -30,7 +35,7 @@ export default function AdminLicenses() {
 
   const handleGenerate = async () => {
     try {
-      const res = await axios.post(`${API_URL}/licenses/generate`, generateForm);
+      const res = await axios.post(`${API_URL}/licenses/generate`, generateForm, getAuth());
       if (res.data.success) {
         toast.success(`${generateForm.quantity} license(s) generated`);
         setShowGenerate(false);
@@ -42,7 +47,7 @@ export default function AdminLicenses() {
 
   const handleDisable = async (id) => {
     try {
-      await axios.put(`${API_URL}/licenses/${id}/disable`);
+      await axios.put(`${API_URL}/licenses/${id}/disable`, {}, getAuth());
       toast.success('License disabled');
       fetchLicenses();
     } catch (error) { toast.error('Failed'); }
@@ -51,7 +56,7 @@ export default function AdminLicenses() {
 
   const handleEnable = async (id) => {
     try {
-      await axios.put(`${API_URL}/licenses/${id}/enable`);
+      await axios.put(`${API_URL}/licenses/${id}/enable`, {}, getAuth());
       toast.success('License enabled');
       fetchLicenses();
     } catch (error) { toast.error('Failed'); }
@@ -77,10 +82,9 @@ export default function AdminLicenses() {
       </div>
 
       {/* Generate Form */}
-      <AnimatePresence>
+      <>
         {showGenerate && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+          <div
             className="overflow-hidden mb-6"
           >
             <div className="glass-card rounded-2xl p-5 lg:p-6">
@@ -116,9 +120,9 @@ export default function AdminLicenses() {
                 <button onClick={handleGenerate} className="btn-primary text-sm py-2 px-5">Generate Keys</button>
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
+      </>
 
       {/* Licenses List */}
       <div className="glass-card rounded-2xl overflow-hidden">
@@ -143,8 +147,8 @@ export default function AdminLicenses() {
             {licenses.map((l) => {
               const isExpired = l.expiresAt && new Date(l.expiresAt) < new Date();
               return (
-                <motion.div
-                  key={l._id} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                <div
+                  key={l._id}
                   className="flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors"
                 >
                   <div className="flex items-center space-x-4 min-w-0 flex-1">
@@ -202,7 +206,7 @@ export default function AdminLicenses() {
                       {l.isDisabled ? <HiCheck className="w-4 h-4" /> : <HiBan className="w-4 h-4" />}
                     </button>
                   </div>
-                </motion.div>
+                </div>
               );
             })}
           </div>
@@ -210,15 +214,13 @@ export default function AdminLicenses() {
       </div>
 
       {/* Disable Confirmation Modal */}
-      <AnimatePresence>
+      <>
         {disableConfirm && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          <div
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
             onClick={() => setDisableConfirm(null)}
           >
-            <motion.div
-              initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }}
+            <div
               className="bg-white dark:bg-gray-900 rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-gray-200 dark:border-gray-700"
               onClick={(e) => e.stopPropagation()}
             >
@@ -238,10 +240,10 @@ export default function AdminLicenses() {
                 <button onClick={() => setDisableConfirm(null)} className="flex-1 btn-secondary text-sm py-2.5">Cancel</button>
                 <button onClick={() => handleDisable(disableConfirm._id)} className="flex-1 text-sm py-2.5 rounded-xl font-medium text-white bg-red-500 hover:bg-red-600 transition-colors">Disable</button>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
+      </>
     </div>
   );
 }

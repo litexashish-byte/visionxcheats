@@ -17,8 +17,14 @@ import {
   HiEye,
   HiSparkles,
   HiUser,
+  HiCurrencyDollar,
+  HiLibrary,
+  HiChip,
+  HiCollection,
+  HiTag,
 } from 'react-icons/hi';
 import { useSiteSettings } from '@/context/SiteSettingsContext';
+import ResellingTabs from '@/components/ResellingTabs';
 
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
@@ -56,6 +62,9 @@ const features = [
 
 export default function HomePage() {
   const [stats, setStats] = useState({ freePanels: 0, paidPanels: 0, totalUsers: 0, avgRating: '0.0' });
+  const [resellProducts, setResellProducts] = useState([]);
+  const [resellCombos, setResellCombos] = useState([]);
+  const [uidBypassItems, setUidBypassItems] = useState([]);
   const { settings } = useSiteSettings();
 
   useEffect(() => {
@@ -67,7 +76,24 @@ export default function HomePage() {
         console.log('API not available yet');
       }
     };
+
+    const fetchResellData = async () => {
+      try {
+        const [productsRes, combosRes, uidRes] = await Promise.all([
+          axios.get(`${API_URL}/resell/products`).catch(() => ({ data: { data: [] } })),
+          axios.get(`${API_URL}/resell/combos`).catch(() => ({ data: { data: [] } })),
+          axios.get(`${API_URL}/resell/uid-bypass`).catch(() => ({ data: { data: [] } })),
+        ]);
+        setResellProducts(productsRes.data.data || []);
+        setResellCombos(combosRes.data.data || []);
+        setUidBypassItems(uidRes.data.data || []);
+      } catch (error) {
+        console.log('Resell API not available');
+      }
+    };
+
     fetchStats();
+    fetchResellData();
   }, []);
 
   return (
@@ -220,6 +246,37 @@ export default function HomePage() {
               );
             })}
           </div>
+        </div>
+      </section>
+
+      {/* ============ RESELLING SECTION ============ */}
+      <section className="py-20 bg-gradient-to-b from-white to-gray-50 dark:from-gray-950 dark:to-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Section Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-sm font-medium mb-4 border border-amber-200 dark:border-amber-800/30">
+              <HiCurrencyDollar className="w-4 h-4" />
+              <span>Start Your Business</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
+              Resell & <span className="gradient-text">Earn Money</span>
+            </h2>
+            <p className="text-gray-500 dark:text-gray-400 text-base max-w-xl mx-auto">
+              Buy at wholesale, resell at your price. Individual panels, combo packs, and UID bypass — all fully managed from admin panel.
+            </p>
+          </motion.div>
+
+          {/* Tab Navigation */}
+          <ResellingTabs
+            products={resellProducts}
+            combos={resellCombos}
+            uidBypass={uidBypassItems}
+          />
         </div>
       </section>
 

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { HiUserGroup, HiPlus, HiTrash, HiPencil, HiCheck, HiX, HiKey, HiOutlineChip, HiSearch, HiLink, HiLightningBolt } from 'react-icons/hi';
 import toast from 'react-hot-toast';
@@ -190,10 +189,10 @@ export default function AdminResellers() {
         </div>
       </div>
 
-      <AnimatePresence>
+      <>
         {showModal && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowModal(false)}>
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6" onClick={e => e.stopPropagation()}>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowModal(false)}>
+            <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6" onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white">{editingReseller ? 'Edit Reseller' : 'Add Reseller'}</h3>
                 <button onClick={() => setShowModal(false)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"><HiX className="w-5 h-5" /></button>
@@ -226,14 +225,14 @@ export default function AdminResellers() {
                   </button>
                 </div>
               </form>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
 
         {/* Admin Whitelist Modal */}
         {showWhitelistModal && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowWhitelistModal(false)}>
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6" onClick={e => e.stopPropagation()}>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowWhitelistModal(false)}>
+            <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6" onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center"><HiLightningBolt className="w-5 h-5 mr-2 text-purple-500" /> Whitelist UID</h3>
                 <button onClick={() => setShowWhitelistModal(false)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"><HiX className="w-5 h-5" /></button>
@@ -268,14 +267,14 @@ export default function AdminResellers() {
                   </button>
                 </div>
               </form>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
 
         {/* Share Link Modal */}
         {showShareModal && shareReseller && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowShareModal(false)}>
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6" onClick={e => e.stopPropagation()}>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowShareModal(false)}>
+            <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6" onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center"><HiLink className="w-5 h-5 mr-2 text-green-500" /> Share Whitelist Link</h3>
                 <button onClick={() => setShowShareModal(false)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"><HiX className="w-5 h-5" /></button>
@@ -303,10 +302,10 @@ export default function AdminResellers() {
                 </div>
               </div>
               <button onClick={() => setShowShareModal(false)} className="w-full mt-4 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium">Close</button>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
+      </>
     </div>
   );
 }

@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   HiShoppingBag, HiPlus, HiPencil, HiTrash, HiStar,
   HiExclamation, HiSearch, HiTag, HiCash, HiPhotograph,
@@ -12,6 +11,12 @@ import toast from 'react-hot-toast';
 import ImgbbUploader from '@/components/ImgbbUploader';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
+function getAuth() {
+  if (typeof window === 'undefined') return {};
+  const token = localStorage.getItem('token');
+  return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+}
 
 const emptyPanel = {
   name: '', description: '', image: '', price: 0, originalPrice: null,
@@ -37,7 +42,7 @@ export default function AdminPaidPanels() {
 
   const fetchPanels = async () => {
     try {
-      const res = await axios.get(`${API_URL}/admin/panels/paid`);
+      const res = await axios.get(`${API_URL}/admin/panels/paid`, getAuth());
       setPanels(res.data.data || []);
     } catch (error) { console.log('Failed to fetch panels'); }
     finally { setIsLoading(false); }
@@ -61,10 +66,10 @@ export default function AdminPaidPanels() {
     const payload = { ...form, features: form.features.filter(f => f.trim()) };
     try {
       if (editingPanel) {
-        await axios.put(`${API_URL}/paid-panels/${editingPanel._id}`, payload);
+        await axios.put(`${API_URL}/paid-panels/${editingPanel._id}`, payload, getAuth());
         toast.success('Panel updated successfully');
       } else {
-        await axios.post(`${API_URL}/paid-panels`, payload);
+        await axios.post(`${API_URL}/paid-panels`, payload, getAuth());
         toast.success('Panel created successfully');
       }
       setShowForm(false); setEditingPanel(null); fetchPanels();
@@ -72,7 +77,7 @@ export default function AdminPaidPanels() {
   };
 
   const handleDelete = async (id) => {
-    try { await axios.delete(`${API_URL}/paid-panels/${id}`); toast.success('Panel deleted'); fetchPanels(); }
+      try { await axios.delete(`${API_URL}/paid-panels/${id}`, getAuth()); toast.success('Panel deleted'); fetchPanels(); }
     catch (e) { toast.error('Failed to delete'); }
     setDeleteConfirm(null);
   };
@@ -98,7 +103,7 @@ export default function AdminPaidPanels() {
   // Inline Form
   if (showForm) {
     return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      <div>
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
@@ -222,7 +227,7 @@ export default function AdminPaidPanels() {
             </button>
           </div>
         </div>
-      </motion.div>
+      </div>
     );
   }
 
@@ -270,8 +275,8 @@ export default function AdminPaidPanels() {
         ) : (
           <div className="divide-y divide-gray-100 dark:divide-gray-800">
             {filteredPanels.map((p) => (
-              <motion.div
-                key={p._id} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              <div
+                key={p._id}
                 className="flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors"
               >
                 <div className="flex items-center space-x-4 min-w-0 flex-1">
@@ -305,22 +310,20 @@ export default function AdminPaidPanels() {
                     <HiTrash className="w-4 h-4" />
                   </button>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         )}
       </div>
 
       {/* Delete Confirmation Modal */}
-      <AnimatePresence>
+      <>
         {deleteConfirm && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          <div
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
             onClick={() => setDeleteConfirm(null)}
           >
-            <motion.div
-              initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }}
+            <div
               className="bg-white dark:bg-gray-900 rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-gray-200 dark:border-gray-700"
               onClick={(e) => e.stopPropagation()}
             >
@@ -337,10 +340,10 @@ export default function AdminPaidPanels() {
                 <button onClick={() => setDeleteConfirm(null)} className="flex-1 btn-secondary text-sm py-2.5">Cancel</button>
                 <button onClick={() => handleDelete(deleteConfirm._id)} className="flex-1 text-sm py-2.5 rounded-xl font-medium text-white bg-red-500 hover:bg-red-600 transition-colors">Delete</button>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
+      </>
     </div>
   );
 }

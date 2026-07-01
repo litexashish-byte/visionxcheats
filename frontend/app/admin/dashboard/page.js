@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
-import { motion } from 'framer-motion';
 import {
   HiUsers,
   HiDownload,
@@ -22,18 +21,11 @@ import {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.06 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
+function getAuth() {
+  if (typeof window === 'undefined') return {};
+  const token = localStorage.getItem('token');
+  return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+}
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -55,7 +47,7 @@ export default function AdminDashboard() {
 
   const fetchDashboard = async () => {
     try {
-      const res = await axios.get(`${API_URL}/admin/dashboard`);
+      const res = await axios.get(`${API_URL}/admin/dashboard`, getAuth());
       if (res.data.success) {
         setStats(res.data.data.stats);
         setRecentUsers(res.data.data.recentUsers || []);
@@ -134,25 +126,23 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="visible">
+    <div initial="hidden" animate="visible">
       {/* Header */}
-      <motion.div variants={itemVariants} className="mb-8">
+      <div className="mb-8">
         <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
         <p className="text-gray-500 dark:text-gray-400 mt-1 flex items-center">
           <HiClock className="w-4 h-4 mr-1.5" />
           Welcome back! Here&apos;s your store overview
         </p>
-      </motion.div>
+      </div>
 
       {/* Stats Grid */}
-      <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-8">
         {statCards.map((card, i) => {
           const Icon = card.icon;
           return (
             <Link key={card.label} href={card.link}>
-              <motion.div
-                whileHover={{ scale: 1.02, y: -2 }}
-                whileTap={{ scale: 0.98 }}
+              <div
                 className={`rounded-2xl p-5 lg:p-6 ${card.lightBg} ${card.borderColor} border cursor-pointer transition-shadow hover:shadow-xl hover:shadow-black/5 relative overflow-hidden group`}
               >
                 {/* Subtle hover glow */}
@@ -182,16 +172,16 @@ export default function AdminDashboard() {
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{card.label}</p>
                   </>
                 )}
-              </motion.div>
+              </div>
             </Link>
           );
         })}
-      </motion.div>
+      </div>
 
       {/* Quick Actions + Recent Users Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Quick Actions */}
-        <motion.div variants={itemVariants} className="lg:col-span-1">
+        <div className="lg:col-span-1">
           <div className="glass-card rounded-2xl p-5 lg:p-6">
             <h2 className="text-base font-bold text-gray-900 dark:text-white mb-1">Quick Actions</h2>
             <p className="text-xs text-gray-500 dark:text-gray-400 mb-5">Common admin tasks</p>
@@ -200,8 +190,7 @@ export default function AdminDashboard() {
                 const Icon = action.icon;
                 return (
                   <Link key={action.label} href={action.href}>
-                    <motion.div
-                      whileHover={{ x: 4 }}
+                    <div
                       className="flex items-center space-x-3 px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all group cursor-pointer"
                     >
                       <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${action.gradient} flex items-center justify-center shadow-sm`}>
@@ -209,16 +198,16 @@ export default function AdminDashboard() {
                       </div>
                       <span className="text-sm font-medium text-gray-700 dark:text-gray-300 flex-1">{action.label}</span>
                       <HiArrowRight className="w-4 h-4 text-gray-300 group-hover:text-primary-500 transition-colors" />
-                    </motion.div>
+                    </div>
                   </Link>
                 );
               })}
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Recent Users */}
-        <motion.div variants={itemVariants} className="lg:col-span-2">
+        <div className="lg:col-span-2">
           <div className="glass-card rounded-2xl p-5 lg:p-6">
             <div className="flex items-center justify-between mb-5">
               <div>
@@ -241,11 +230,8 @@ export default function AdminDashboard() {
             ) : (
               <div className="space-y-2">
                 {recentUsers.map((u, i) => (
-                  <motion.div
+                  <div
                     key={u._id}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05 }}
                     className="flex items-center justify-between p-3.5 rounded-xl bg-gray-50 dark:bg-gray-800/30 hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors"
                   >
                     <div className="flex items-center space-x-3">
@@ -270,13 +256,13 @@ export default function AdminDashboard() {
                         {new Date(u.createdAt).toLocaleDateString()}
                       </span>
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
             )}
           </div>
-        </motion.div>
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

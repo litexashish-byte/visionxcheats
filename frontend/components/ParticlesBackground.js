@@ -6,6 +6,9 @@ export default function ParticlesBackground({ density = 30 }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.location.pathname.startsWith('/admin')) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -14,13 +17,12 @@ export default function ParticlesBackground({ density = 30 }) {
     let height = window.innerHeight;
     let animId = null;
 
-    // Pre-compute color strings to avoid string building in animation loop
     const COLORS = [
-      'rgba(56,189,248,',  // sky blue
-      'rgba(79,70,229,',   // indigo
-      'rgba(129,140,248,', // light indigo
-      'rgba(34,211,238,',  // cyan
-      'rgba(167,139,250,', // violet
+      'rgba(56,189,248,',
+      'rgba(79,70,229,',
+      'rgba(129,140,248,',
+      'rgba(34,211,238,',
+      'rgba(167,139,250,',
     ];
 
     const handleResize = () => {
@@ -55,30 +57,22 @@ export default function ParticlesBackground({ density = 30 }) {
     function animate() {
       time += 0.01;
       ctx.clearRect(0, 0, width, height);
-
-      // First pass: update positions
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
         p.x += p.vx;
         p.y += p.vy;
-
-        // Wrap
         if (p.x < -10) p.x = width + 10;
         if (p.x > width + 10) p.x = -10;
         if (p.y < -10) p.y = height + 10;
         if (p.y > height + 10) p.y = -10;
       }
-
-      // Second pass: draw connections (only between nearby particles)
-      // Limit to prevent O(n²) on large counts
       const maxConnections = Math.min(particles.length, 50);
       for (let i = 0; i < maxConnections; i++) {
         for (let j = i + 1; j < maxConnections; j++) {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
           const dist = dx * dx + dy * dy;
-
-          if (dist < 25000) { // ~158px
+          if (dist < 25000) {
             const alpha = (1 - Math.sqrt(dist) / 158) * 0.12;
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
@@ -89,20 +83,16 @@ export default function ParticlesBackground({ density = 30 }) {
           }
         }
       }
-
-      // Third pass: draw particles
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
         const pulse = Math.sin(time * 2 + p.phase) * 0.15 + 0.85;
         const currentAlpha = p.alpha * pulse;
         const currentR = p.r * pulse;
-
         ctx.beginPath();
         ctx.arc(p.x, p.y, currentR, 0, Math.PI * 2);
         ctx.fillStyle = p.color + Math.max(0, currentAlpha) + ')';
         ctx.fill();
       }
-
       animId = requestAnimationFrame(animate);
     }
 

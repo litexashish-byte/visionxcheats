@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   HiUsers, HiSearch, HiBan, HiTrash, HiCheck,
   HiExclamation, HiMail, HiCalendar,
@@ -10,6 +9,12 @@ import {
 import toast from 'react-hot-toast';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
+function getAuth() {
+  if (typeof window === 'undefined') return {};
+  const token = localStorage.getItem('token');
+  return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+}
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
@@ -30,7 +35,7 @@ export default function AdminUsers() {
     try {
       const params = { limit: 50 };
       if (searchQuery) params.search = searchQuery;
-      const res = await axios.get(`${API_URL}/admin/users`, { params });
+      const res = await axios.get(`${API_URL}/admin/users`, { params, ...getAuth() });
       setUsers(res.data.data || []);
     } catch (error) {
       console.log('Failed to fetch users');
@@ -42,7 +47,7 @@ export default function AdminUsers() {
 
   const handleBanUser = async (userId) => {
     try {
-      const res = await axios.put(`${API_URL}/admin/users/${userId}/ban`);
+      const res = await axios.put(`${API_URL}/admin/users/${userId}/ban`, {}, getAuth());
       if (res.data.success) {
         toast.success(res.data.message || 'User banned successfully');
         fetchUsers();
@@ -56,7 +61,7 @@ export default function AdminUsers() {
 
   const handleUnbanUser = async (userId) => {
     try {
-      const res = await axios.put(`${API_URL}/admin/users/${userId}/unban`);
+      const res = await axios.put(`${API_URL}/admin/users/${userId}/unban`, {}, getAuth());
       if (res.data.success) {
         toast.success(res.data.message || 'User unbanned successfully');
         fetchUsers();
@@ -70,7 +75,7 @@ export default function AdminUsers() {
 
   const handleDeleteUser = async (userId) => {
     try {
-      const res = await axios.delete(`${API_URL}/admin/users/${userId}`);
+      const res = await axios.delete(`${API_URL}/admin/users/${userId}`, getAuth());
       if (res.data.success) {
         toast.success('User deleted');
         fetchUsers();
@@ -128,10 +133,8 @@ export default function AdminUsers() {
         ) : (
           <div className="divide-y divide-gray-100 dark:divide-gray-800">
             {users.map((u) => (
-              <motion.div
+              <div
                 key={u._id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
                 className="flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors"
               >
                 <div className="flex items-center space-x-4 min-w-0 flex-1">
@@ -203,26 +206,20 @@ export default function AdminUsers() {
                     <HiTrash className="w-4 h-4" />
                   </button>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         )}
       </div>
 
       {/* Confirmation Modal */}
-      <AnimatePresence>
+      <>
         {confirmModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+          <div
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
             onClick={() => setConfirmModal(null)}
           >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
+            <div
               className="bg-white dark:bg-gray-900 rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-gray-200 dark:border-gray-700"
               onClick={(e) => e.stopPropagation()}
             >
@@ -272,10 +269,10 @@ export default function AdminUsers() {
                   {confirmModal.type === 'unban' ? 'Unban' : confirmModal.type === 'delete' ? 'Delete' : 'Ban'}
                 </button>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
+      </>
     </div>
   );
 }

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import {
@@ -10,6 +9,12 @@ import {
 } from 'react-icons/hi';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
+function getAuth() {
+  if (typeof window === 'undefined') return {};
+  const token = localStorage.getItem('token');
+  return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+}
 
 export default function AdminDownloads() {
   const [downloads, setDownloads] = useState([]);
@@ -23,7 +28,7 @@ export default function AdminDownloads() {
   const fetchDownloads = async () => {
     try {
       setIsLoading(true);
-      const res = await axios.get(`${API_URL}/downloads`, { params: { status: activeFilter } });
+      const res = await axios.get(`${API_URL}/downloads`, { params: { status: activeFilter }, ...getAuth() });
       setDownloads(res.data.data || []);
       setStats(res.data.stats || { total: 0, totalDownloads: 0, pending: 0 });
     } catch (error) { console.log('Failed to fetch'); }
@@ -33,7 +38,7 @@ export default function AdminDownloads() {
   const resetDownloads = async () => {
     if (!confirm('Are you sure you want to reset ALL downloads? This cannot be undone.')) return;
     try {
-      await axios.delete(`${API_URL}/downloads`);
+      await axios.delete(`${API_URL}/downloads`, getAuth());
       toast.success('All downloads reset');
       fetchDownloads();
     } catch (error) {
@@ -74,7 +79,7 @@ export default function AdminDownloads() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}
+        <div
           onClick={() => setActiveFilter('all')}
           className={`glass-card rounded-2xl p-5 text-center cursor-pointer transition-all ${activeFilter === 'all' ? 'ring-2 ring-blue-500 dark:ring-blue-400' : ''}`}>
           <div className="w-10 h-10 mx-auto mb-3 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-sm">
@@ -82,8 +87,8 @@ export default function AdminDownloads() {
           </div>
           <div className="text-2xl font-bold text-gray-900 dark:text-white tabular-nums">{stats.total}</div>
           <p className="text-xs text-gray-500 mt-1">Total Attempts</p>
-        </motion.div>
-        <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}
+        </div>
+        <div
           onClick={() => setActiveFilter('completed')}
           className={`glass-card rounded-2xl p-5 text-center cursor-pointer transition-all ${activeFilter === 'completed' ? 'ring-2 ring-green-500 dark:ring-green-400' : ''}`}>
           <div className="w-10 h-10 mx-auto mb-3 rounded-xl bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center shadow-sm">
@@ -91,8 +96,8 @@ export default function AdminDownloads() {
           </div>
           <div className="text-2xl font-bold text-green-500 tabular-nums">{stats.totalDownloads}</div>
           <p className="text-xs text-gray-500 mt-1">Completed</p>
-        </motion.div>
-        <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}
+        </div>
+        <div
           onClick={() => setActiveFilter('pending')}
           className={`glass-card rounded-2xl p-5 text-center cursor-pointer transition-all ${activeFilter === 'pending' ? 'ring-2 ring-amber-500 dark:ring-amber-400' : ''}`}>
           <div className="w-10 h-10 mx-auto mb-3 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-sm">
@@ -100,7 +105,7 @@ export default function AdminDownloads() {
           </div>
           <div className="text-2xl font-bold text-amber-500 tabular-nums">{stats.pending}</div>
           <p className="text-xs text-gray-500 mt-1">Pending</p>
-        </motion.div>
+        </div>
       </div>
 
       {/* Search */}
@@ -141,8 +146,8 @@ export default function AdminDownloads() {
             {filteredDownloads.map((d) => {
               const status = getStatusStyle(d);
               return (
-                <motion.div
-                  key={d._id} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                <div
+                  key={d._id}
                   className="flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors"
                 >
                   <div className="flex items-center space-x-4 min-w-0 flex-1">
@@ -172,7 +177,7 @@ export default function AdminDownloads() {
                   <span className={`px-2.5 py-1 rounded-full text-[10px] font-semibold ${status.bg} ${status.color} flex-shrink-0`}>
                     {status.label}
                   </span>
-                </motion.div>
+                </div>
               );
             })}
           </div>

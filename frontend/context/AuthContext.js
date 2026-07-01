@@ -15,9 +15,6 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(null);
   const router = useRouter();
 
-  // Set axios defaults
-  axios.defaults.baseURL = API_URL;
-
   const setAuthToken = useCallback((newToken) => {
     if (newToken) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
@@ -42,7 +39,7 @@ export function AuthProvider({ children }) {
 
       try {
         setAuthToken(savedToken);
-        const res = await axios.get('/auth/me');
+        const res = await axios.get(`${API_URL}/auth/me`);
         setUser(res.data.user);
       } catch (error) {
         setAuthToken(null);
@@ -56,7 +53,7 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
-      const res = await axios.post('/auth/login', { email, password });
+      const res = await axios.post(`${API_URL}/auth/login`, { email, password });
       setAuthToken(res.data.token);
       setUser(res.data.user);
       toast.success('Welcome back!');
@@ -72,7 +69,7 @@ export function AuthProvider({ children }) {
   const loginWithToken = useCallback(async (newToken) => {
     try {
       setAuthToken(newToken);
-      const res = await axios.get('/auth/me');
+      const res = await axios.get(`${API_URL}/auth/me`);
       setUser(res.data.user);
       toast.success('Welcome!');
       return true;
@@ -85,7 +82,7 @@ export function AuthProvider({ children }) {
 
   const register = async (username, email, password) => {
     try {
-      const res = await axios.post('/auth/register', { username, email, password });
+      const res = await axios.post(`${API_URL}/auth/register`, { username, email, password });
       setAuthToken(res.data.token);
       setUser(res.data.user);
       toast.success('Account created successfully!');

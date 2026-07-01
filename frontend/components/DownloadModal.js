@@ -4,14 +4,11 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   HiX, HiExternalLink, HiDownload, HiCheck, HiShieldCheck, 
-  HiClock, HiCalendar, HiDocumentText, HiArrowRight, 
-  HiLink, HiRefresh, HiEye
+  HiClock, HiCalendar, HiDocumentText,
+  HiRefresh, HiEye
 } from 'react-icons/hi';
 import { useAuth } from '@/context/AuthContext';
-import axios from 'axios';
 import toast from 'react-hot-toast';
-import Link from 'next/link';
-
 const SHORTENER_WAIT_TIME = 5;
 
 export default function DownloadModal({ panel, onClose }) {
@@ -34,33 +31,32 @@ export default function DownloadModal({ panel, onClose }) {
   };
 
   const handleStartDownload = async () => {
-    if (!user) {
-      toast.error('Please login to download');
-      return;
-    }
-
     try {
       setStep('processing');
-      const res = await axios.post(`/free-panels/${panel._id}/download`);
+      const token = typeof window !== 'undefined' ? localStorage.getItem('vision_token') : null;
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
 
-      if (res.data.requiresShortener) {
-        setShortenerLink(res.data.shortenerLink);
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const res = await fetch(`${API_URL}/free-panels/${panel._id}/download`, {
+        method: 'POST',
+        headers,
+      });
+      const data = await res.json();
+
+      if (data.requiresShortener) {
+        setShortenerLink(data.shortenerLink);
         setStep('shortener');
         startShortenerSimulation();
-      } else if (res.data.directLink) {
-        setDownloadLink(res.data.directLink);
+      } else if (data.directLink) {
+        setDownloadLink(data.directLink);
         setStep('downloading');
-        window.open(res.data.directLink, '_blank');
+        window.open(data.directLink, '_blank');
         startCountdown();
       }
     } catch (error) {
-      if (error.response?.data?.linkExpired) {
-        toast.error('Download link has expired. Please wait for admin to update.');
-        setStep('initial');
-      } else {
-        toast.error(error.response?.data?.message || 'Download failed');
-        setStep('initial');
-      }
+      toast.error(error.message || 'Download failed');
+      setStep('initial');
     }
   };
 
@@ -84,11 +80,20 @@ export default function DownloadModal({ panel, onClose }) {
     
     setStep('processing');
     try {
-      const res = await axios.post(`/free-panels/${panel._id}/confirm-download`);
-      setDownloadLink(res.data.downloadLink);
-      setDownloadRecord(res.data.download);
+      const token = typeof window !== 'undefined' ? localStorage.getItem('vision_token') : null;
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const res = await fetch(`${API_URL}/free-panels/${panel._id}/confirm-download`, {
+        method: 'POST',
+        headers,
+      });
+      const data = await res.json();
+      setDownloadLink(data.downloadLink);
+      setDownloadRecord(data.download);
       setStep('downloading');
-      window.open(res.data.downloadLink, '_blank');
+      window.open(data.downloadLink, '_blank');
       startCountdown();
     } catch (error) {
       toast.error('Failed to get download link');
@@ -242,34 +247,15 @@ export default function DownloadModal({ panel, onClose }) {
                         </div>
                         <p className="text-sm text-gray-600 dark:text-gray-300">
                           Click below to start your download. Complete a quick verification step to access your file.
+                          {user && ' You are logged in as ' + user.username + '.'}
                         </p>
                       </div>
 
-                      {!user && (
-                        <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/20 
-                                      border border-amber-200 dark:border-amber-800/30">
-                          <p className="text-sm text-amber-700 dark:text-amber-300">
-                            Please login to download this panel.
-                          </p>
-                          <Link 
-                            href="/login" 
-                            className="inline-flex items-center space-x-1 text-sm font-semibold 
-                                     text-amber-600 dark:text-amber-400 hover:text-amber-700 
-                                     mt-2 transition-colors"
-                          >
-                            <span>Login here</span>
-                            <HiArrowRight className="w-4 h-4" />
-                          </Link>
-                        </div>
-                      )}
-
                       <button
                         onClick={handleStartDownload}
-                        disabled={!user}
                         className="w-full rounded-2xl bg-gradient-to-r from-primary-500 to-accent-500 
                                  text-white font-semibold py-4 
                                  shadow-lg shadow-primary-500/30 hover:shadow-xl
-                                 disabled:opacity-50 disabled:cursor-not-allowed
                                  transition-all duration-300 hover:-translate-y-0.5"
                       >
                         <HiDownload className="w-5 h-5 inline mr-2" />

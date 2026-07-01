@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import {
   HiCog, HiSave, HiKey, HiLink, HiShieldCheck, HiInformationCircle,
@@ -12,6 +11,12 @@ import {
 import toast from 'react-hot-toast';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
+function getAuth() {
+  if (typeof window === 'undefined') return {};
+  const token = localStorage.getItem('token');
+  return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+}
 
 const defaultSettings = {
   shortenerApiKey: '',
@@ -42,7 +47,7 @@ export default function AdminSettings() {
   const fetchSettings = async () => {
     setIsLoading(true);
     try {
-      const res = await axios.get(`${API_URL}/admin/settings`);
+      const res = await axios.get(`${API_URL}/admin/settings`, getAuth());
       if (res.data.success) {
         setSettings(res.data.data);
         setOriginalSettings(res.data.data);
@@ -59,7 +64,7 @@ export default function AdminSettings() {
     setIsSaving(true);
     setSaveSuccess(false);
     try {
-      const res = await axios.put(`${API_URL}/admin/settings`, settings);
+      const res = await axios.put(`${API_URL}/admin/settings`, settings, getAuth());
       if (res.data.success) {
         setSettings(res.data.data);
         setOriginalSettings(res.data.data);
@@ -181,25 +186,20 @@ export default function AdminSettings() {
       </div>
 
       {/* Unsaved changes indicator */}
-      <AnimatePresence>
+      <>
         {hasChanges && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
+          <div
             className="flex items-center space-x-2 px-4 py-3 mb-6 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 text-sm text-amber-700 dark:text-amber-300"
           >
             <HiInformationCircle className="w-4 h-4 flex-shrink-0" />
             <span>You have unsaved changes. Click "Save Changes" to apply them.</span>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
+      </>
 
       <div className="space-y-6">
         {/* API Configuration */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
+        <div
           className="glass-card rounded-2xl p-5 lg:p-6 relative overflow-hidden"
         >
           <div className="absolute -top-16 -right-16 w-32 h-32 bg-gradient-to-br from-purple-400/10 to-purple-600/5 rounded-full blur-3xl" />
@@ -259,13 +259,10 @@ export default function AdminSettings() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Site Settings */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
+        <div
           className="glass-card rounded-2xl p-5 lg:p-6 relative overflow-hidden"
         >
           <div className="absolute -top-16 -right-16 w-32 h-32 bg-gradient-to-br from-blue-400/10 to-blue-600/5 rounded-full blur-3xl" />
@@ -319,13 +316,10 @@ export default function AdminSettings() {
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{settings.siteDescription || 'Your trusted source...'}</p>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* System Controls */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
+        <div
           className="glass-card rounded-2xl p-5 lg:p-6 relative overflow-hidden"
         >
           <div className="absolute -top-16 -right-16 w-32 h-32 bg-gradient-to-br from-amber-400/10 to-amber-600/5 rounded-full blur-3xl" />
@@ -366,13 +360,10 @@ export default function AdminSettings() {
               />
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Social Links */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
+        <div
           className="glass-card rounded-2xl p-5 lg:p-6 relative overflow-hidden"
         >
           <div className="absolute -top-16 -right-16 w-32 h-32 bg-gradient-to-br from-indigo-400/10 to-indigo-600/5 rounded-full blur-3xl" />
@@ -461,13 +452,10 @@ export default function AdminSettings() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Info Box */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
+        <div
           className="p-4 lg:p-5 rounded-xl bg-gradient-to-r from-primary-50 to-accent-50 dark:from-primary-900/20 dark:to-accent-900/20 border border-primary-100 dark:border-primary-900/30"
         >
           <div className="flex items-start space-x-3">
@@ -483,15 +471,12 @@ export default function AdminSettings() {
               </p>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Bottom Save Bar */}
-        <AnimatePresence>
+        <>
           {hasChanges && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
+            <div
               className="sticky bottom-6 p-4 rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl backdrop-blur-xl bg-white/90 dark:bg-gray-900/90"
             >
               <div className="flex items-center justify-between">
@@ -520,9 +505,9 @@ export default function AdminSettings() {
                   </button>
                 </div>
               </div>
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
+        </>
       </div>
     </div>
   );
