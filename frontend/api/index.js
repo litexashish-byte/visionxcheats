@@ -148,7 +148,18 @@ app.get('/api/settings', async (req, res) => {
 
 // Health
 app.get('/api/health', (req, res) => {
-  res.json({ success: true, message: 'VISION X CHEATS API', mode: global.isDemoMode ? 'demo' : 'production', timestamp: new Date().toISOString(), routes: loadedRoutes.length });
+  res.json({ success: true, message: 'VISION X CHEATS API', mode: global.isDemoMode ? 'demo' : 'production', timestamp: new Date().toISOString(), routes: loadedRoutes.length, demoPanelsCount: global.isDemoMode ? demoDB.freePanels.length : 'N/A' });
+});
+
+// Debug: test freePanels directly
+app.get('/api/debug/free-panels-test', (req, res) => {
+  try {
+    if (!global.isDemoMode) return res.json({ success: false, message: 'Not demo mode' });
+    const panels = demoDB.getFreePanels({ isActive: true });
+    res.json({ success: true, count: panels.length, names: panels.map(p => p.name) });
+  } catch (e) {
+    res.status(500).json({ success: false, error: e.message, stack: e.stack });
+  }
 });
 
 // Load routes
