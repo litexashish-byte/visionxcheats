@@ -77,6 +77,49 @@ const demoDB = {
     this.downloads.push(d); return d;
   },
   getDownloadHistory(userId) { return this.downloads.filter(d => d.userId === userId).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); },
+
+  getFreePanels(filter = {}) {
+    let panels = [...this.freePanels];
+    if (filter.isActive) panels = panels.filter(p => p.isActive);
+    if (filter.category) panels = panels.filter(p => p.category === filter.category);
+    if (filter.isFeatured) panels = panels.filter(p => p.isFeatured);
+    if (filter.search) {
+      const s = filter.search.toLowerCase();
+      panels = panels.filter(p => p.name.toLowerCase().includes(s) || p.description.toLowerCase().includes(s));
+    }
+    return panels;
+  },
+  getPaidPanels(filter = {}) {
+    let panels = [...this.paidPanels];
+    if (filter.isActive) panels = panels.filter(p => p.isActive);
+    if (filter.category) panels = panels.filter(p => p.category === filter.category);
+    if (filter.isFeatured) panels = panels.filter(p => p.isFeatured);
+    if (filter.search) {
+      const s = filter.search.toLowerCase();
+      panels = panels.filter(p => p.name.toLowerCase().includes(s) || p.description.toLowerCase().includes(s));
+    }
+    return panels;
+  },
+  findFreePanelById(id) { return this.freePanels.find(p => p._id === id); },
+  findPaidPanelById(id) { return this.paidPanels.find(p => p._id === id); },
+  createFreePanel(data) { const p = { _id: makeId('fp'), ...data, downloadCount: 0, rating: 0, totalRatings: 0, createdAt: new Date(), updatedAt: new Date() }; this.freePanels.push(p); return p; },
+  addFreePanel(data) { return this.createFreePanel(data); },
+  updateFreePanel(id, data) { const idx = this.freePanels.findIndex(p => p._id === id); if (idx === -1) return null; this.freePanels[idx] = { ...this.freePanels[idx], ...data, updatedAt: new Date() }; return this.freePanels[idx]; },
+  deleteFreePanel(id) { this.freePanels = this.freePanels.filter(p => p._id !== id); return true; },
+  createPaidPanel(data) { const p = { _id: makeId('pp'), ...data, salesCount: 0, rating: 0, totalRatings: 0, createdAt: new Date(), updatedAt: new Date() }; this.paidPanels.push(p); return p; },
+  addPaidPanel(data) { return this.createPaidPanel(data); },
+  updatePaidPanel(id, data) { const idx = this.paidPanels.findIndex(p => p._id === id); if (idx === -1) return null; this.paidPanels[idx] = { ...this.paidPanels[idx], ...data, updatedAt: new Date() }; return this.paidPanels[idx]; },
+  deletePaidPanel(id) { this.paidPanels = this.paidPanels.filter(p => p._id !== id); return true; },
+  getUserRating(userId, panelId) { const r = this.ratings.find(r => r.userId === userId && r.panelId === panelId); return r ? r.rating : 0; },
+  addUserRating(userId, panelId, panelType, rating) { this.ratings.push({ _id: makeId('rating'), userId, panelId, panelType, rating, createdAt: new Date() }); },
+  deleteRating(id) { this.ratings = this.ratings.filter(r => r._id !== id); return true; },
+  getAllRatings() { return this.ratings; },
+  generateLicense(data) {
+    const key = 'VX-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+    const license = { _id: makeId('lic'), key, ...data, isActive: true, isDisabled: false, createdAt: new Date(), updatedAt: new Date() };
+    this.licenses.push(license);
+    return license;
+  },
 };
 // ========== END INLINE DEMO DB ==========
 
