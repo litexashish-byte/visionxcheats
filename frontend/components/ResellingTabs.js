@@ -82,13 +82,15 @@ function ResellProductCard({ product }) {
         </div>
 
         {/* CTA */}
-        <Link
-          href="/reselling"
+        <a
+          href="https://discord.gg/visionxstore"
+          target="_blank"
+          rel="noopener noreferrer"
           className="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary-500 to-accent-500 text-white font-semibold text-sm shadow-md shadow-primary-500/20 hover:shadow-lg hover:shadow-primary-500/30 transition-all duration-300"
         >
           Resell Now
           <HiArrowRight className="w-4 h-4 ml-1.5" />
-        </Link>
+        </a>
       </div>
     </motion.div>
   );
