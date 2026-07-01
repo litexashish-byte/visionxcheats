@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node backend/server.js",
-    "dev": "node backend/server.js"
+    "dev": "node backend/server.js",
+    "vercel-build": "cd frontend && npm install && npx next build"
   }
 }

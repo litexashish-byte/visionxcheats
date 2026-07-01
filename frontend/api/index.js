@@ -79,26 +79,30 @@ const demoDB = {
   getDownloadHistory(userId) { return this.downloads.filter(d => d.userId === userId).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); },
 
   getFreePanels(filter = {}) {
-    let panels = [...this.freePanels];
-    if (filter.isActive) panels = panels.filter(p => p.isActive);
-    if (filter.category) panels = panels.filter(p => p.category === filter.category);
-    if (filter.isFeatured) panels = panels.filter(p => p.isFeatured);
-    if (filter.search) {
-      const s = filter.search.toLowerCase();
-      panels = panels.filter(p => p.name.toLowerCase().includes(s) || p.description.toLowerCase().includes(s));
-    }
-    return panels;
+    try {
+      let panels = Array.isArray(this.freePanels) ? [...this.freePanels] : [];
+      if (filter.isActive) panels = panels.filter(p => p && p.isActive);
+      if (filter.category) panels = panels.filter(p => p && p.category === filter.category);
+      if (filter.isFeatured) panels = panels.filter(p => p && p.isFeatured);
+      if (filter.search) {
+        const s = String(filter.search).toLowerCase();
+        panels = panels.filter(p => p && p.name && p.name.toLowerCase().includes(s));
+      }
+      return panels;
+    } catch (e) { return []; }
   },
   getPaidPanels(filter = {}) {
-    let panels = [...this.paidPanels];
-    if (filter.isActive) panels = panels.filter(p => p.isActive);
-    if (filter.category) panels = panels.filter(p => p.category === filter.category);
-    if (filter.isFeatured) panels = panels.filter(p => p.isFeatured);
-    if (filter.search) {
-      const s = filter.search.toLowerCase();
-      panels = panels.filter(p => p.name.toLowerCase().includes(s) || p.description.toLowerCase().includes(s));
-    }
-    return panels;
+    try {
+      let panels = Array.isArray(this.paidPanels) ? [...this.paidPanels] : [];
+      if (filter.isActive) panels = panels.filter(p => p && p.isActive);
+      if (filter.category) panels = panels.filter(p => p && p.category === filter.category);
+      if (filter.isFeatured) panels = panels.filter(p => p && p.isFeatured);
+      if (filter.search) {
+        const s = String(filter.search).toLowerCase();
+        panels = panels.filter(p => p && p.name && p.name.toLowerCase().includes(s));
+      }
+      return panels;
+    } catch (e) { return []; }
   },
   findFreePanelById(id) { return this.freePanels.find(p => p._id === id); },
   findPaidPanelById(id) { return this.paidPanels.find(p => p._id === id); },
