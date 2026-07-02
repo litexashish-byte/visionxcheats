@@ -15,7 +15,25 @@ app.use(cors({ origin: '*', credentials: true }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-global.isDemoMode = !process.env.MONGODB_URI;
+// Try MongoDB connection, fallback to demo mode if it fails
+global.isDemoMode = true;
+global._mongoReady = false;
+if (process.env.MONGODB_URI) {
+  const mongoose = require('mongoose');
+  mongoose.set('bufferCommands', false);
+  mongoose.connect(process.env.MONGODB_URI, {
+    serverSelectionTimeoutMS: 5000,
+    connectTimeoutMS: 5000,
+  }).then(() => {
+    global.isDemoMode = false;
+    global._mongoReady = true;
+    console.log('[DB] MongoDB connected - PRODUCTION mode');
+  }).catch((e) => {
+    global.isDemoMode = true;
+    global._mongoReady = false;
+    console.log('[DB] MongoDB failed, using DEMO mode:', e.message);
+  });
+}
 
 // ========== DEMO DB with persistence ==========
 function makeId(prefix) { return prefix + '-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6); }
