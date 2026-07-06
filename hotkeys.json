@@ -1,0 +1,13 @@
+{
+  "visible": "8",
+  "rage": "F2",
+  "connect": "F5",
+  "line": "Ctrl+L",
+  "box": "Ctrl+B",
+  "health": "Ctrl+H",
+  "name": "Ctrl+N",
+  "skeleton": "Ctrl+Shift+S",
+  "adb": "4",
+  "logs": "F10",
+  "network": "F11"
+}

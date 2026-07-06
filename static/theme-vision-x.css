@@ -1,0 +1,39 @@
+/* Vision X — shared color index (login + panel) */
+:root {
+  --vx-bg: #000000;
+  --vx-bg-elevated: rgba(12, 8, 18, 0.92);
+  --vx-surface: rgba(18, 12, 28, 0.88);
+  --vx-border: rgba(160, 32, 240, 0.35);
+  --vx-silver: #b8b8c8;
+  --vx-silver-bright: #e4e4ec;
+  --vx-purple: #a020f0;
+  --vx-purple-bright: #bf40ff;
+  --vx-purple-deep: #6a18a8;
+  --vx-purple-glow: rgba(191, 64, 255, 0.45);
+  --vx-purple-dim: rgba(160, 32, 240, 0.14);
+  --vx-text: #f4f0f8;
+  --vx-muted: rgba(244, 240, 248, 0.52);
+  --vx-success: #22c55e;
+  --vx-danger: #ef4444;
+  --vx-warn: #fbbf24;
+
+  /* Panel aliases (index.html uses these names) */
+  --bg: var(--vx-bg);
+  --surface: var(--vx-surface);
+  --surface-2: var(--vx-bg-elevated);
+  --border: var(--vx-border);
+  --accent: var(--vx-purple);
+  --accent-2: var(--vx-purple-bright);
+  --accent-dim: var(--vx-purple-dim);
+  --text: var(--vx-text);
+  --muted: var(--vx-muted);
+  --soft: var(--vx-silver);
+  --gold: var(--vx-silver-bright);
+  --success: var(--vx-success);
+  --danger: var(--vx-danger);
+  --warn: var(--vx-warn);
+  --radius: 14px;
+  --font: 'Outfit', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --font-brand: 'Orbitron', 'Outfit', sans-serif;
+}

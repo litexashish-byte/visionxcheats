@@ -1,0 +1,2410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vision Cheats — Streamer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/theme-vision-x.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      overflow-x: hidden;
+    }
+
+    body::-webkit-scrollbar { width: 6px; }
+    body::-webkit-scrollbar-thumb { background: rgba(160, 32, 240, 0.45); border-radius: 3px; }
+
+    .bg-mesh {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 90% 60% at 20% -5%, rgba(160, 32, 240, 0.28), transparent 50%),
+        radial-gradient(ellipse 75% 50% at 90% 70%, rgba(191, 64, 255, 0.14), transparent 50%),
+        radial-gradient(ellipse 60% 40% at 30% 100%, rgba(120, 80, 180, 0.12), transparent 50%),
+        linear-gradient(180deg, #000000 0%, #0a0610 50%, #000000 100%);
+      animation: meshFlow 18s ease-in-out infinite;
+    }
+
+    @keyframes meshFlow {
+      0%, 100% { filter: brightness(1) saturate(1); }
+      50% { filter: brightness(1.05) saturate(1.1); }
+    }
+
+    #particles-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.45;
+    }
+
+    .starfall { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .star {
+      position: absolute;
+      width: var(--s);
+      height: var(--s);
+      border-radius: 50%;
+      opacity: var(--o);
+      animation: starFall var(--d) linear var(--delay) infinite;
+    }
+    .star-red { background: #a020f0; box-shadow: 0 0 16px rgba(160, 32, 240, 0.9), 0 0 32px rgba(160, 32, 240, 0.5); filter: drop-shadow(0 0 8px rgba(160, 32, 240, 0.6)); }
+    .star-white { background: #fff; box-shadow: 0 0 12px rgba(255,255,255,0.8), 0 0 24px rgba(255,255,255,0.4); filter: drop-shadow(0 0 6px rgba(255,255,255,0.5)); }
+    .star-gray { background: #a1a1aa; box-shadow: 0 0 10px rgba(161,161,170,0.7), 0 0 20px rgba(161,161,170,0.3); }
+    @keyframes starFall {
+      0% { transform: translate3d(var(--x), -10vh, 0) scale(1); opacity: var(--o); }
+      50% { opacity: calc(var(--o) * 1.2); }
+      100% { transform: translate3d(calc(var(--x) + var(--drift)), 110vh, 0) scale(0.8); opacity: 0; }
+    }
+
+    .main-container {
+      position: relative;
+      z-index: 1;
+      width: min(1100px, 100%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(20px);
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(160, 32, 240, 0.08), transparent);
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .header-logo {
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+      flex-shrink: 0;
+      filter: drop-shadow(0 0 12px rgba(191, 64, 255, 0.45));
+    }
+
+    .header-brand-text {
+      min-width: 0;
+    }
+
+    .header-brand h1 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, #fff, var(--soft) 40%, var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header-brand span {
+      display: block;
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      margin-top: 2px;
+      -webkit-text-fill-color: var(--muted);
+    }
+
+    @media (max-width: 520px) {
+      .header-logo { width: 44px; height: 44px; }
+      .header-brand h1 { font-size: 0.95rem; }
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(6, 6, 12, 0.6);
+      border: 1px solid var(--border);
+      font-size: 0.75rem;
+    }
+
+    .status-indicator {
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .status-online { color: var(--success); }
+    .status-offline { color: var(--muted); }
+    .status-error { color: var(--danger); }
+
+    .status-meta { color: var(--muted); font-family: var(--mono); font-size: 0.68rem; }
+
+    .sound-toggle-btn, .menu-btn {
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--accent-dim);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    }
+    .sound-toggle-btn:hover, .menu-btn:hover {
+      border-color: var(--accent);
+      background: rgba(160, 32, 240, 0.25);
+      transform: translateY(-1px);
+    }
+    .menu-btn { width: 40px; padding: 8px; display: grid; place-items: center; }
+
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      min-height: 520px;
+    }
+
+    .tab-rail-wrap {
+      padding: 0 18px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(160, 32, 240, 0.06), transparent);
+    }
+
+    .tab-rail {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      padding: 12px 4px 14px;
+    }
+
+    @media (max-width: 640px) {
+      .tab-rail {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .tab-rail::-webkit-scrollbar { display: none; }
+      .tab-btn { min-width: 118px; flex-shrink: 0; scroll-snap-align: start; }
+      .tab-indicator { display: none; }
+    }
+
+    .tab-indicator {
+      position: absolute;
+      bottom: 8px;
+      left: 4px;
+      height: 3px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      box-shadow: 0 0 16px rgba(160, 32, 240, 0.7);
+      transition: transform 0.35s cubic-bezier(0.34, 1.2, 0.64, 1), width 0.35s cubic-bezier(0.34, 1.2, 0.64, 1);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .tab-btn {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 10px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--muted);
+      font-family: var(--font);
+      cursor: pointer;
+      transition: color 0.25s, background 0.25s, border-color 0.25s, transform 0.2s;
+    }
+
+    .tab-btn i {
+      font-size: 1rem;
+      width: 20px;
+      text-align: center;
+      transition: transform 0.25s, color 0.25s;
+    }
+
+    .tab-btn .tab-text {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1px;
+      text-align: left;
+    }
+
+    .tab-btn .tab-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      line-height: 1.2;
+    }
+
+    .tab-btn .tab-desc {
+      font-size: 0.62rem;
+      font-weight: 500;
+      opacity: 0.65;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+      background: rgba(160, 32, 240, 0.08);
+      border-color: rgba(160, 32, 240, 0.15);
+    }
+
+    .tab-btn:hover i { transform: scale(1.1); color: var(--soft); }
+
+    .tab-btn.active {
+      color: #fff;
+      background: rgba(160, 32, 240, 0.14);
+      border-color: rgba(160, 32, 240, 0.35);
+    }
+
+    .tab-btn.active i {
+      color: #e9d5ff;
+      filter: drop-shadow(0 0 8px rgba(160, 32, 240, 0.6));
+    }
+
+    .tab-btn.active .tab-desc { opacity: 1; color: var(--gold); }
+
+    .tab-btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .tab-content-wrapper {
+      flex: 1;
+      padding: 18px;
+      overflow-y: auto;
+      max-height: calc(100vh - 200px);
+    }
+
+    .tab-panels {
+      position: relative;
+      min-height: 280px;
+    }
+
+    .tab-content {
+      display: none;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: tabPanelIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .tab-content.leaving {
+      display: block;
+      animation: tabPanelOut 0.22s ease forwards;
+      pointer-events: none;
+    }
+
+    @keyframes tabPanelIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes tabPanelOut {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-6px); }
+    }
+
+    .action-panel {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      background: var(--surface-2);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius);
+      transition: border-color 0.2s;
+    }
+    .action-panel:hover { border-color: var(--border); }
+
+    .action-panel label {
+      font-size: 0.92rem;
+      font-weight: 700;
+      display: block;
+    }
+
+    .hotkey-info {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .hotkey-assigned {
+      font-family: var(--mono);
+      color: var(--soft);
+      font-size: 0.72rem;
+    }
+
+    .btn-group { display: flex; gap: 8px; flex-shrink: 0; }
+
+    .btn {
+      padding: 9px 16px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      font-family: var(--font);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.04em;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #bf40ff);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(160, 32, 240, 0.35);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(160, 32, 240, 0.45); }
+    .btn-secondary {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .btn-secondary:hover { background: var(--accent-dim); border-color: var(--accent); }
+
+    .toggle-wrap {
+      position: relative;
+      width: 48px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+    .toggle-input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      cursor: pointer;
+      transition: 0.25s;
+      border: 1px solid var(--border);
+    }
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      left: 2px;
+      top: 2px;
+      background: #fff;
+      border-radius: 50%;
+      transition: 0.25s;
+    }
+    .toggle-input:checked + .toggle-slider {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      border-color: transparent;
+    }
+    .toggle-input:checked + .toggle-slider::before { transform: translateX(22px); }
+
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      max-width: 280px;
+    }
+    .slider-container input[type="range"] {
+      flex: 1;
+      accent-color: var(--accent);
+      height: 6px;
+    }
+    .slider-value {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--soft);
+      min-width: 36px;
+      text-align: right;
+    }
+
+    .esp-grid { display: grid; gap: 10px; }
+    .esp-warning {
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      background: rgba(251, 191, 36, 0.1);
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      color: var(--warn);
+      font-size: 0.85rem;
+    }
+
+    .section-heading {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 18px 0 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+
+    .warning-card {
+      padding: 10px 14px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      background: rgba(244, 63, 94, 0.1);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      color: #fda4af;
+      font-size: 0.82rem;
+    }
+
+    .about-shuffle {
+      min-height: 80px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 20px;
+    }
+    .about-shuffle-text {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-align: center;
+      background: linear-gradient(90deg, #fff, var(--soft) 50%, var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .about-devs { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+    .about-devs img { max-width: 120px; border-radius: 12px; border: 1px solid var(--border); }
+
+    .main-container.about-view .console { display: none; }
+
+    .console {
+      margin-top: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: rgba(6, 6, 12, 0.7);
+    }
+    .console-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: var(--accent-dim);
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--soft);
+    }
+    .console-body {
+      max-height: 140px;
+      overflow-y: auto;
+      padding: 10px 14px;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+    }
+    .console-body.hidden { display: none; }
+    .console-log { padding: 3px 0; color: var(--muted); border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .console-log .time { color: #ff4060; }
+    .console-log .message { color: #e4e4e7; }
+
+    #notification-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .notification {
+      padding: 12px 18px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+      transform: translateX(120%);
+      opacity: 0;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+    .notification.show { transform: translateX(0); opacity: 1; }
+    .notification.hide { transform: translateX(120%); opacity: 0; }
+
+    .menu-dropdown {
+      position: fixed;
+      top: 72px;
+      right: 24px;
+      z-index: 9999;
+      min-width: 200px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 6px;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+      display: none;
+    }
+    .menu-dropdown.open { display: block; }
+    .menu-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      transition: background 0.15s;
+    }
+    .menu-item:hover { background: var(--accent-dim); }
+    .menu-divider { height: 1px; background: var(--border); margin: 4px 0; }
+    .shortcut { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
+
+    .devs-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 10001;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      place-items: center;
+      padding: 20px;
+    }
+    .devs-modal-backdrop.open { display: grid; }
+    .devs-modal {
+      width: min(420px, 100%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+    }
+    .devs-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .devs-header h2 { font-size: 1rem; letter-spacing: 0.1em; }
+    .devs-close-btn {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.5rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .dev-card {
+      padding: 14px;
+      border-radius: 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+    }
+    .dev-top { display: flex; gap: 12px; align-items: center; margin-bottom: 10px; }
+    .dev-avatar img { width: 48px; height: 48px; border-radius: 10px; object-fit: cover; }
+    .dev-name { font-weight: 800; }
+    .dev-role { font-size: 0.72rem; color: var(--accent); letter-spacing: 0.08em; }
+    .dev-body { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+
+    .emoji-burst {
+      position: fixed;
+      z-index: 99999;
+      pointer-events: none;
+      font-size: 18px;
+      animation: emojiPop 700ms ease forwards;
+    }
+    @keyframes emojiPop {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+      30% { opacity: 1; }
+      100% { opacity: 0; transform: translate(calc(-50% + var(--dx, 0)), calc(-50% + var(--dy, -20px))) scale(1.2); }
+    }
+
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+    .hidden-stub { display: none !important; }
+
+    .hotkey-grid {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .hotkey-row {
+      display: grid;
+      grid-template-columns: 1fr minmax(100px, 140px) auto;
+      gap: 8px;
+      align-items: center;
+      padding: 10px 12px;
+      background: var(--surface-2);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+    }
+
+    .hotkey-row label {
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .hotkey-row input.hk-input {
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: rgba(6, 6, 12, 0.8);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .hotkey-row input.hk-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(160, 32, 240, 0.2);
+    }
+
+    .hk-set-btn {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--accent-dim);
+      color: var(--text);
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .hk-set-btn:hover { border-color: var(--accent); background: rgba(160, 32, 240, 0.2); }
+    .hk-set-btn.recording { border-color: var(--gold); color: var(--gold); animation: pulse 0.8s infinite; }
+    @keyframes pulse { 50% { opacity: 0.6; } }
+
+    .esp-online { color: var(--success) !important; }
+    .esp-offline { color: var(--danger) !important; }
+
+  </style>
+</head>
+<body>
+  <div class="bg-mesh" aria-hidden="true"></div>
+  <div class="starfall" id="starfall" aria-hidden="true"></div>
+  <canvas id="particles-canvas" aria-hidden="true"></canvas>
+
+  <div id="notification-container"></div>
+
+  <div class="menu-dropdown" id="top-menu">
+    <div class="menu-item" id="menu-logout">
+      <span class="label"><i class="fas fa-sign-out-alt"></i> Logout</span>
+      <span class="shortcut">ESC</span>
+    </div>
+    <div class="menu-divider"></div>
+    <div class="menu-item" id="menu-devs">
+      <span class="label"><i class="fas fa-users"></i> About devs</span>
+      <span class="shortcut">F1</span>
+    </div>
+  </div>
+
+  <div class="devs-modal-backdrop" id="devs-modal">
+    <div class="devs-modal">
+      <div class="devs-header">
+        <h2>Creators</h2>
+        <button class="devs-close-btn" id="devs-close" type="button" aria-label="Close">&times;</button>
+      </div>
+      <div class="devs-grid">
+        <div class="dev-card">
+          <div class="dev-top">
+            <div class="dev-avatar">
+              <img src="./bg main/mainpagbg.jpeg" alt="UMESH">
+            </div>
+            <div>
+              <div class="dev-name">UMESH</div>
+              <div class="dev-role">FOUNDER</div>
+            </div>
+          </div>
+          <div class="dev-body">
+            UI/UX, backend, security, and streamer workflow — built for a smooth, reliable panel experience.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="video-container" style="display:none;">
+    <audio id="success-sound" preload="auto">
+      <source src="./video sound/holy_shit_128kbps.mp3" type="audio/mpeg">
+    </audio>
+  </div>
+
+  <!-- Hidden stubs for legacy JS -->
+  <div id="shoulder-menu" class="hidden-stub"></div>
+  <button id="shoulder-btn" type="button" class="hidden-stub"></button>
+  <p id="status-body" class="sr-only"></p>
+
+  <div class="main-container">
+    <header class="header">
+      <div class="header-brand">
+        <img class="header-logo" src="/static/vision-cheats-logo.png" alt="Vision Cheats" width="56" height="56">
+        <div class="header-brand-text">
+          <h1>Vision Cheats</h1>
+          <span>Streamer panel v1.5</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="status-pill">
+          <span id="status" class="status-indicator status-offline">Offline</span>
+          <span id="esp-status" class="status-meta esp-offline">• ESP off</span>
+          <span id="ping" class="status-meta">• v1.5 • -- ms</span>
+        </div>
+        <button id="sound-toggle" class="sound-toggle-btn" type="button" aria-pressed="false">Enable sound</button>
+        <button id="about-back-btn" class="sound-toggle-btn" type="button" style="display:none;">Back</button>
+        <button class="menu-btn" type="button" aria-label="Menu"><i class="fas fa-bars"></i></button>
+      </div>
+    </header>
+
+    <div class="app-shell">
+      <div class="tab-rail-wrap">
+        <div class="tab-rail" id="tab-rail" role="tablist" aria-label="Panel sections">
+          <span class="tab-indicator" id="tab-indicator" aria-hidden="true"></span>
+          <button class="tab-btn active" type="button" role="tab" id="tab-headshot" aria-selected="true" aria-controls="headshot" data-tab="headshot">
+            <i class="fas fa-crosshairs" aria-hidden="true"></i>
+            <span class="tab-text">
+              <span class="tab-label">Headshot</span>
+              <span class="tab-desc">Connect & Safe aim</span>
+            </span>
+          </button>
+          <button class="tab-btn" type="button" role="tab" id="tab-esp" aria-selected="false" aria-controls="esp" data-tab="esp">
+            <i class="fas fa-eye" aria-hidden="true"></i>
+            <span class="tab-text">
+              <span class="tab-label">ESP</span>
+              <span class="tab-desc">Visuals</span>
+            </span>
+          </button>
+          <button class="tab-btn" type="button" role="tab" id="tab-settings" aria-selected="false" aria-controls="settings" data-tab="settings">
+            <i class="fas fa-sliders" aria-hidden="true"></i>
+            <span class="tab-text">
+              <span class="tab-label">Settings</span>
+              <span class="tab-desc">System</span>
+            </span>
+          </button>
+          <button class="tab-btn" type="button" role="tab" id="tab-about" aria-selected="false" aria-controls="about" data-tab="about">
+            <i class="fas fa-circle-info" aria-hidden="true"></i>
+            <span class="tab-text">
+              <span class="tab-label">About</span>
+              <span class="tab-desc">Info</span>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <div class="tab-content-wrapper">
+        <div class="tab-panels" id="tab-panels">
+        <div id="headshot" class="tab-content active" role="tabpanel" aria-labelledby="tab-headshot">
+          <div class="action-panel">
+            <div>
+              <label>Emulator connection</label>
+              <p class="hotkey-info">Hotkey: <span class="hotkey-assigned" id="adb-hotkey-display">F12</span></p>
+            </div>
+            <div class="btn-group">
+              <button class="btn btn-secondary" type="button" onclick="sendCommand('connectemu')">Connect</button>
+              <button class="btn btn-primary" type="button" onclick="sendCommand('bypasspc')">Bypass PC</button>
+            </div>
+          </div>
+          <div class="action-panel">
+            <div>
+              <label>Aimbot Safe</label>
+              <p class="hotkey-info">Hotkey: <span class="hotkey-assigned" id="visible-hotkey-display">F1</span> · Collider aim (Safe only)</p>
+            </div>
+            <label class="toggle-wrap">
+              <input type="checkbox" class="toggle-input" data-on-cmd="aimbotvisible" data-off-cmd="aimbotvisibleoff" data-type="esp">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="action-panel">
+            <div>
+              <label>Safe aim radius</label>
+              <p class="hotkey-info">Pixels — Safe aim while firing</p>
+            </div>
+            <div class="slider-container">
+              <input type="range" id="aimfov-slider" min="20" max="400" value="90" oninput="updateAimFOV(this.value)">
+              <span class="slider-value" id="aimfov-value">90</span>
+            </div>
+          </div>
+          <div class="action-panel">
+            <div>
+              <label>Aimbot Extreme</label>
+              <p class="hotkey-info">Hotkey: <span class="hotkey-assigned" id="rage-hotkey-display">F2</span> · Hold LMB + FOV lock</p>
+            </div>
+            <label class="toggle-wrap">
+              <input type="checkbox" class="toggle-input" data-on-cmd="aimbotrage" data-off-cmd="aimbotrageoff" data-type="esp">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="action-panel">
+            <div>
+              <label>Extreme FOV</label>
+              <p class="hotkey-info">Screen radius while holding aim key (LMB)</p>
+            </div>
+            <div class="slider-container">
+              <input type="range" id="extreme-fov-slider" min="20" max="400" value="180" oninput="updateExtremeFOV(this.value)">
+              <span class="slider-value" id="extreme-fov-value">180</span>
+            </div>
+          </div>
+          <div class="action-panel">
+            <div>
+              <label>Aim distance</label>
+              <p class="hotkey-info">Max world distance (meters) for both aim modes</p>
+            </div>
+            <div class="slider-container">
+              <input type="range" id="aimdist-slider" min="50" max="500" value="200" oninput="updateAimDist(this.value)">
+              <span class="slider-value" id="aimdist-value">200</span>
+            </div>
+          </div>
+          <div class="action-panel">
+            <div>
+              <label>Aim smoothness</label>
+              <p class="hotkey-info">Extreme only — delay between aim writes (0 = snap, 30 = smooth)</p>
+            </div>
+            <div class="slider-container">
+              <input type="range" id="aimsmooth-slider" min="0" max="30" value="0" oninput="updateAimSmooth(this.value)">
+              <span class="slider-value" id="aimsmooth-value">0</span>
+            </div>
+          </div>
+          <div class="action-panel">
+            <div>
+              <label>Draw FOV circle</label>
+              <p class="hotkey-info">Show Extreme FOV ring on overlay</p>
+            </div>
+            <label class="toggle-wrap">
+              <input type="checkbox" class="toggle-input" data-on-cmd="drawfov" data-off-cmd="drawfovoff" data-type="esp">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div id="esp" class="tab-content" role="tabpanel" aria-labelledby="tab-esp" hidden>
+          <div id="esp-off-banner" class="esp-warning" style="display:none;">
+            pyesp off — run <strong>start_streamer.bat</strong> as Administrator, then Connect.
+          </div>
+          <div class="action-panel">
+            <div>
+              <label>Enable ESP</label>
+              <p class="hotkey-info">Master switch for all ESP features</p>
+            </div>
+            <label class="toggle-wrap">
+              <input type="checkbox" id="esp-master-toggle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div id="esp-warning" class="esp-warning" style="display:none;">
+            Turn on <strong>Enable ESP</strong> above to use these features.
+          </div>
+          <div class="esp-grid">
+            <div class="action-panel esp-feature">
+              <div>
+                <label>Esp line</label>
+                <p class="hotkey-info">Hotkey: <span class="hotkey-assigned" id="line-hotkey-display">Ctrl+L</span></p>
+              </div>
+              <label class="toggle-wrap">
+                <input type="checkbox" class="toggle-input" data-on-cmd="esplineon" data-off-cmd="esplineoff" data-type="esp">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="action-panel esp-feature">
+              <div>
+                <label>Esp box</label>
+                <p class="hotkey-info">Hotkey: <span class="hotkey-assigned" id="box-hotkey-display">Ctrl+B</span></p>
+              </div>
+              <label class="toggle-wrap">
+                <input type="checkbox" class="toggle-input" data-on-cmd="espboxon" data-off-cmd="espboxoff" data-type="esp">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="action-panel esp-feature">
+              <div>
+                <label>Esp health</label>
+                <p class="hotkey-info">Hotkey: <span class="hotkey-assigned" id="health-hotkey-display">Ctrl+H</span></p>
+              </div>
+              <label class="toggle-wrap">
+                <input type="checkbox" class="toggle-input" data-on-cmd="esphealth" data-off-cmd="esphealthoff" data-type="esp">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="action-panel esp-feature">
+              <div>
+                <label>Esp name</label>
+                <p class="hotkey-info">Player name + distance</p>
+              </div>
+              <label class="toggle-wrap">
+                <input type="checkbox" class="toggle-input" data-on-cmd="espname" data-off-cmd="espnameoff" data-type="esp">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="action-panel esp-feature">
+              <div>
+                <label>Esp skeleton</label>
+                <p class="hotkey-info">Hotkey: <span class="hotkey-assigned" id="skeleton-hotkey-display">Ctrl+Shift+S</span></p>
+              </div>
+              <label class="toggle-wrap">
+                <input type="checkbox" class="toggle-input" data-on-cmd="espskeleton" data-off-cmd="espskeletonoff" data-type="esp">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="action-panel esp-feature">
+              <div>
+                <label>Streamer mode</label>
+                <p class="hotkey-info">Hide ESP from OBS/Discord capture (use Window Capture on emulator, not Display Capture)</p>
+              </div>
+              <label class="toggle-wrap">
+                <input type="checkbox" class="toggle-input" data-on-cmd="streammode" data-off-cmd="streammodeoff" data-type="esp">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div id="settings" class="tab-content" role="tabpanel" aria-labelledby="tab-settings" hidden>
+          <div class="action-panel">
+            <div>
+              <label>64-bit Architecture</label>
+              <p class="hotkey-info">32-bit / 64-bit</p>
+            </div>
+            <label class="toggle-wrap">
+              <input type="checkbox" class="toggle-input" data-on-cmd="64bit" data-off-cmd="32bit" data-type="cmd">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="action-panel">
+            <div>
+              <label>Panel Checker Bypass</label>
+              <p class="hotkey-info">Bypass security checks</p>
+            </div>
+            <label class="toggle-wrap">
+              <input type="checkbox" class="toggle-input" data-on-cmd="bypass_enable" data-off-cmd="bypass_disable" data-type="cmd">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="action-panel">
+            <div>
+              <label>Notification Mode</label>
+              <p class="hotkey-info">Toast notifications</p>
+            </div>
+            <label class="toggle-wrap">
+              <input type="checkbox" class="toggle-input" id="notification-toggle" data-on-cmd="notification" data-off-cmd="off" data-type="notification">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="section-heading">Hotkeys</div>
+          <div class="action-panel">
+            <div>
+              <label>Keyboard shortcuts</label>
+              <p class="hotkey-info">PC: <strong>Set</strong> + press keys. Phone: type combo (e.g. <code>F1</code>, <code>Ctrl+L</code>) in the box, then <strong>Save hotkeys</strong>. Works from any device on your LAN IP. Keys run on the gaming PC (fullscreen OK).</p>
+            </div>
+            <label class="toggle-wrap">
+              <input type="checkbox" id="hotkeys-enabled-toggle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="hotkey-grid" id="hotkey-grid">
+            <div class="hotkey-row" data-bind="adb"><label>Emulator connection</label><input class="hk-input" id="hotkey-adb" placeholder="F12"><button type="button" class="hk-set-btn">Set</button></div>
+            <div class="hotkey-row" data-bind="visible"><label>Aimbot Safe</label><input class="hk-input" id="hotkey-visible" placeholder="F1"><button type="button" class="hk-set-btn">Set</button></div>
+            <div class="hotkey-row" data-bind="rage"><label>Aimbot Extreme</label><input class="hk-input" id="hotkey-rage" placeholder="F2"><button type="button" class="hk-set-btn">Set</button></div>
+            <div class="hotkey-row" data-bind="connect"><label>ESP Connect</label><input class="hk-input" id="hotkey-connect" placeholder="F5"><button type="button" class="hk-set-btn">Set</button></div>
+            <div class="hotkey-row" data-bind="line"><label>ESP line</label><input class="hk-input" id="hotkey-line" placeholder="Ctrl+L"><button type="button" class="hk-set-btn">Set</button></div>
+            <div class="hotkey-row" data-bind="box"><label>ESP box</label><input class="hk-input" id="hotkey-box" placeholder="Ctrl+B"><button type="button" class="hk-set-btn">Set</button></div>
+            <div class="hotkey-row" data-bind="health"><label>ESP health</label><input class="hk-input" id="hotkey-health" placeholder="Ctrl+H"><button type="button" class="hk-set-btn">Set</button></div>
+            <div class="hotkey-row" data-bind="name"><label>ESP name</label><input class="hk-input" id="hotkey-name" placeholder="Ctrl+N"><button type="button" class="hk-set-btn">Set</button></div>
+            <div class="hotkey-row" data-bind="skeleton"><label>ESP skeleton</label><input class="hk-input" id="hotkey-skeleton" placeholder="Ctrl+Shift+S"><button type="button" class="hk-set-btn">Set</button></div>
+            <div class="hotkey-row" data-bind="logs"><label>Control logs</label><input class="hk-input" id="hotkey-logs" placeholder="F10"><button type="button" class="hk-set-btn">Set</button></div>
+            <div class="hotkey-row" data-bind="network"><label>Emu network</label><input class="hk-input" id="hotkey-network" placeholder="F11"><button type="button" class="hk-set-btn">Set</button></div>
+            <div class="hotkey-row" data-bind="hsOn"><label>HS on</label><input class="hk-input" id="hotkey-hs-on" placeholder=""><button type="button" class="hk-set-btn">Set</button></div>
+            <div class="hotkey-row" data-bind="hsOff"><label>HS off</label><input class="hk-input" id="hotkey-hs-off" placeholder=""><button type="button" class="hk-set-btn">Set</button></div>
+          </div>
+          <button type="button" class="btn btn-primary" id="save-hotkeys-btn" style="width:100%; margin-bottom:14px;">Save hotkeys</button>
+
+          <div class="section-heading">Advanced</div>
+          <div class="warning-card">The features below may carry ban risk — use with caution.</div>
+          <div class="action-panel">
+            <div>
+              <label>Control Logs</label>
+              <p class="hotkey-info">Hotkey: <span class="hotkey-assigned" id="logs-hotkey-display">F10</span></p>
+            </div>
+            <button class="btn btn-primary" type="button" onclick="sendCommand('bypasspc')">Enable</button>
+          </div>
+          <div class="action-panel">
+            <div>
+              <label>Emulator Network</label>
+              <p class="hotkey-info">Hotkey: <span class="hotkey-assigned" id="network-hotkey-display">F11</span></p>
+            </div>
+            <label class="toggle-wrap">
+              <input type="checkbox" class="toggle-input" data-on-cmd="unblockint" data-off-cmd="blockint" data-type="cmd">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div id="about" class="tab-content" role="tabpanel" aria-labelledby="tab-about" hidden>
+          <div class="about-shuffle">
+            <span id="about-shuffle-text" class="about-shuffle-text">WELCOME TO VISION X STREAMER</span>
+          </div>
+          <div class="about-devs">
+            <img id="about-img-shark" alt="Creator" hidden>
+            <img id="about-img-harsh" alt="Creator" hidden>
+          </div>
+        </div>
+        </div><!-- /.tab-panels -->
+
+        <div class="console">
+          <div class="console-header">
+            <span>Console</span>
+            <i class="fas fa-chevron-up"></i>
+          </div>
+          <div class="console-body" id="console-output"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+        // Protection: direct URL se index.html open hone par login pe bhejo (bypass na ho)
+        (function () {
+            var xhr = new XMLHttpRequest();
+            xhr.withCredentials = true;
+            xhr.open('GET', '/check-auth', false);
+            try {
+                xhr.send();
+                if (xhr.status === 401) {
+                    window.location.replace('/');
+                    return;
+                }
+                if (xhr.status === 200 && xhr.responseText) {
+                    var data = JSON.parse(xhr.responseText);
+                    if (data.authenticated === false) {
+                        window.location.replace('/');
+                        return;
+                    }
+                }
+            } catch (e) {
+                // Parse/network error: redirect mat karo, taaki login ke baad logout na ho
+            }
+        })();
+
+        // Global settings
+        let settings = {
+            notificationMode: 'notification',
+            espEnabled: true,
+            hotkeysEnabled: true,
+            hotkeyBindings: {
+                visible: 'F1',
+                rage: 'F2',
+                connect: 'F5',
+                logs: 'F10',
+                network: 'F11',
+                adb: 'F12',
+                line: 'Ctrl+L',
+                box: 'Ctrl+B',
+                health: 'Ctrl+H',
+                name: 'Ctrl+N',
+                skeleton: 'Ctrl+Shift+S'
+            }
+        };
+
+        // Player status monitoring variables
+        let playerStatusInterval;
+        let lastStatus = null;
+        let statusCheckCount = 0;
+
+        // Load settings from localStorage
+        function loadSettings() {
+            const savedSettings = localStorage.getItem('appSettings');
+            if (savedSettings) {
+                const parsedSettings = JSON.parse(savedSettings);
+                settings = { ...settings, ...parsedSettings };
+            }
+        }
+
+        // Save settings to localStorage
+        function saveSettings() {
+            localStorage.setItem('appSettings', JSON.stringify(settings));
+        }
+
+        // Initialize settings
+        loadSettings();
+
+        // Sound handling (Chrome/Edge autoplay-safe)
+        let soundEnabled = false;
+        let pendingLoginSuccessSound = false;
+
+        function loadSoundPrefs() {
+            try {
+                soundEnabled = localStorage.getItem('soundEnabled') === '1';
+            } catch (e) {
+                soundEnabled = false;
+            }
+        }
+
+        function saveSoundPrefs() {
+            try {
+                localStorage.setItem('soundEnabled', soundEnabled ? '1' : '0');
+            } catch (e) { }
+        }
+
+        function updateSoundButtonUI() {
+            const btn = document.getElementById('sound-toggle');
+            if (!btn) return;
+            btn.setAttribute('aria-pressed', soundEnabled ? 'true' : 'false');
+            btn.textContent = soundEnabled ? 'Sound enabled' : 'Enable sound';
+        }
+
+        async function tryPlayLoginSuccessSound() {
+            const sound = document.getElementById('success-sound');
+            if (!sound) return;
+
+            // Only play if login requested it
+            if (!pendingLoginSuccessSound) return;
+
+            if (!soundEnabled) {
+                showNotification('Sound is off. Click "Enable sound" to play.');
+                return;
+            }
+
+            try {
+                // Ensure the browser actually loads the source
+                try { sound.load(); } catch (e) { }
+                sound.pause();
+                sound.currentTime = 0;
+                sound.volume = 1.0;
+                sound.muted = false;
+                await sound.play();
+                pendingLoginSuccessSound = false;
+            } catch (err) {
+                showNotification('Click "Enable sound" to allow audio.');
+            }
+        }
+
+        function setupAutoplayFallbackGestures() {
+            const handler = () => {
+                // If autoplay was blocked, first gesture should start it instantly.
+                tryPlayLoginSuccessSound();
+            };
+            document.addEventListener('pointerdown', handler, { once: true, passive: true });
+            document.addEventListener('keydown', handler, { once: true });
+            document.addEventListener('touchstart', handler, { once: true, passive: true });
+        }
+
+        function tryAutoplayBurst() {
+            // Multiple attempts to maximize chance after load/paint
+            tryPlayLoginSuccessSound();
+            setTimeout(tryPlayLoginSuccessSound, 150);
+            setTimeout(tryPlayLoginSuccessSound, 600);
+        }
+
+        let selectedPosition = 'right';
+        let headshotEnabled = false;
+        let aimbotVersion = 'version-1';
+        let isTabOpen = false;
+        let hotkeyEnabled = true;
+        let pressedKeys = new Set();
+        let hotkeyStates = {
+            aimbot: false
+        };
+
+        // Initialize hotkey displays
+        function setHotkeyText(id, value) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value;
+        }
+
+        function initHotkeyDisplays() {
+            setHotkeyText('visible-hotkey-display', settings.hotkeyBindings.visible);
+            setHotkeyText('rage-hotkey-display', settings.hotkeyBindings.rage);
+            setHotkeyText('hson-hotkey-display', settings.hotkeyBindings.hsOn);
+            setHotkeyText('hsoff-hotkey-display', settings.hotkeyBindings.hsOff);
+            setHotkeyText('logs-hotkey-display', settings.hotkeyBindings.logs);
+            setHotkeyText('network-hotkey-display', settings.hotkeyBindings.network);
+            setHotkeyText('Emulator connection', settings.hotkeyBindings.adb);
+            setHotkeyText('line-hotkey-display', settings.hotkeyBindings.line);
+            setHotkeyText('box-hotkey-display', settings.hotkeyBindings.box);
+            setHotkeyText('health-hotkey-display', settings.hotkeyBindings.health);
+            setHotkeyText('skeleton-hotkey-display', settings.hotkeyBindings.skeleton);
+        }
+
+        function isPhoneUi() {
+            return window.matchMedia('(max-width: 900px)').matches
+                || (navigator.maxTouchPoints > 0 && !window.matchMedia('(pointer: fine)').matches);
+        }
+
+        function normalizeHotkeyCombo(raw) {
+            if (!raw) return '';
+            return raw.split('+').map(p => {
+                const t = p.trim();
+                if (!t) return '';
+                const u = t.toUpperCase();
+                if (u === 'CTRL' || u === 'CONTROL') return 'Ctrl';
+                if (u === 'SHIFT') return 'Shift';
+                if (u === 'ALT') return 'Alt';
+                if (/^F\d{1,2}$/.test(u)) return u;
+                if (t.toLowerCase() === 'space') return 'Space';
+                if (t.length === 1) return t.toUpperCase();
+                return t.charAt(0).toUpperCase() + t.slice(1);
+            }).filter(Boolean).join('+');
+        }
+
+        function collectHotkeysFromGrid() {
+            const payload = {};
+            document.querySelectorAll('.hotkey-row[data-bind]').forEach(row => {
+                const key = row.dataset.bind;
+                const el = row.querySelector('.hk-input');
+                if (!key || !el) return;
+                const val = normalizeHotkeyCombo(el.value.trim());
+                if (val) {
+                    settings.hotkeyBindings[key] = val;
+                    el.value = val;
+                    payload[key] = val;
+                }
+            });
+            return payload;
+        }
+
+        // Save hotkey settings (PC + phone — syncs to gaming PC via /api/hotkeys)
+        async function saveHotkeySettings() {
+            const payload = collectHotkeysFromGrid();
+            saveSettings();
+            initHotkeyDisplays();
+            try {
+                await fetch('/api/hotkeys', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+                updateConsole('Hotkeys saved on gaming PC (fullscreen OK — run panel as Admin if a key fails)');
+                showNotification('Hotkeys saved on PC');
+            } catch (e) {
+                updateConsole('Hotkeys saved on this device only — open panel via PC LAN IP and Save again');
+                showNotification('Saved locally — use PC IP URL to sync keys');
+            }
+        }
+
+        function formatHotkeyFromEvent(event) {
+            const parts = [];
+            if (event.ctrlKey) parts.push('Ctrl');
+            if (event.shiftKey) parts.push('Shift');
+            if (event.altKey) parts.push('Alt');
+            let key = event.key;
+            if (key === ' ') key = 'Space';
+            else if (key.length === 1) key = key.toUpperCase();
+            else if (key.startsWith('F') && key.length <= 3) key = key.toUpperCase();
+            else if (key === 'Escape') return null;
+            if (!['Control', 'Shift', 'Alt', 'Meta'].includes(key)) parts.push(key);
+            return parts.length ? parts.join('+') : null;
+        }
+
+        let hotkeyCaptureHandler = null;
+
+        function startHotkeyCapture(inputEl, bindingKey) {
+            if (!inputEl) return;
+            if (isPhoneUi()) {
+                inputEl.focus();
+                inputEl.select();
+                showNotification('Type key combo (e.g. F1, Ctrl+L) then tap Save hotkeys');
+                return;
+            }
+            if (hotkeyCaptureHandler) {
+                document.removeEventListener('keydown', hotkeyCaptureHandler, true);
+                hotkeyCaptureHandler = null;
+            }
+            const row = inputEl.closest('.hotkey-row');
+            const btn = row ? row.querySelector('.hk-set-btn') : null;
+            if (btn) btn.classList.add('recording');
+            inputEl.value = 'Press keys…';
+            showNotification('Press key combination (Esc to cancel)');
+
+            hotkeyCaptureHandler = (event) => {
+                if (event.key === 'Escape') {
+                    inputEl.value = settings.hotkeyBindings[bindingKey] || '';
+                    cleanup();
+                    return;
+                }
+                const combo = formatHotkeyFromEvent(event);
+                if (!combo) return;
+                event.preventDefault();
+                event.stopPropagation();
+                settings.hotkeyBindings[bindingKey] = combo;
+                inputEl.value = combo;
+                saveSettings();
+                initHotkeyDisplays();
+                updateConsole(`Hotkey [${bindingKey}]: ${combo}`);
+                showNotification(`Bound: ${combo}`);
+                cleanup();
+            };
+
+            function cleanup() {
+                document.removeEventListener('keydown', hotkeyCaptureHandler, true);
+                hotkeyCaptureHandler = null;
+                if (btn) btn.classList.remove('recording');
+            }
+
+            document.addEventListener('keydown', hotkeyCaptureHandler, true);
+        }
+
+        async function loadGlobalHotkeysFromServer() {
+            try {
+                const res = await fetch('/api/hotkeys');
+                const data = await res.json();
+                if (data && typeof data === 'object') {
+                    for (const [key, val] of Object.entries(data)) {
+                        if (val) settings.hotkeyBindings[key] = val;
+                    }
+                    saveSettings();
+                    syncHotkeyInputsFromSettings();
+                    initHotkeyDisplays();
+                }
+            } catch (_) { /* panel not running yet */ }
+        }
+
+        function syncHotkeyInputsFromSettings() {
+            document.querySelectorAll('.hotkey-row[data-bind]').forEach(row => {
+                const key = row.dataset.bind;
+                const el = row.querySelector('.hk-input');
+                if (key && el) el.value = settings.hotkeyBindings[key] || '';
+            });
+        }
+
+        function initHotkeyInputListeners() {
+            document.querySelectorAll('.hotkey-row[data-bind] .hk-input').forEach(inputEl => {
+                inputEl.addEventListener('change', () => {
+                    const row = inputEl.closest('.hotkey-row');
+                    const key = row?.dataset.bind;
+                    if (!key) return;
+                    const val = normalizeHotkeyCombo(inputEl.value.trim());
+                    if (val) {
+                        settings.hotkeyBindings[key] = val;
+                        inputEl.value = val;
+                        saveSettings();
+                        initHotkeyDisplays();
+                    }
+                });
+            });
+        }
+
+        async function checkEspStatus() {
+            try {
+                const res = await fetch('/esp-status');
+                const data = await res.json();
+                const el = document.getElementById('esp-status');
+                const banner = document.getElementById('esp-off-banner');
+                if (el) {
+                    let extra = '';
+                    if (data.detail) extra = ` · ${data.detail}`;
+                    else if (data.il2cpp) {
+                        extra = ` · ${data.il2cpp}`;
+                        if (data.gf) extra += ` GF:${data.gf}`;
+                        extra += ` · ${data.enemies || 0} enemies`;
+                        if (data.matrix) extra += ' · matrix OK';
+                        if (data.overlay) extra += ` · overlay ${data.size || 'on'}`;
+                        else extra += ' · overlay OFF (open HD-Player)';
+                    }
+                    el.textContent = data.connected ? `• ESP on${extra}` : '• ESP off';
+                    el.className = 'status-meta ' + (data.connected ? 'esp-online' : 'esp-offline');
+                }
+                if (banner) banner.style.display = data.connected ? 'none' : 'block';
+                return data.connected;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        // Toggle hotkeys
+        function toggleHotkeys(enabled) {
+            settings.hotkeysEnabled = enabled;
+            saveSettings();
+            updateConsole(`Hotkeys ${enabled ? 'enabled' : 'disabled'}`);
+            showNotification(`Hotkeys ${enabled ? 'ENABLED' : 'DISABLED'}`);
+        }
+
+        // Notification system
+        function showNotification(message) {
+            if (settings.notificationMode === 'off') return;
+
+            const notificationContainer = document.getElementById('notification-container');
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+
+            notificationContainer.appendChild(notification);
+
+            // Show notification
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+
+            // Hide after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                notification.classList.add('hide');
+
+                // Remove after animation completes
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Toggle ESP
+        async function toggleEsp(enable) {
+            settings.espEnabled = enable;
+            saveSettings();
+            updateEspUI();
+
+            const espFeatures = document.querySelectorAll('.esp-feature');
+            espFeatures.forEach(feature => {
+                feature.style.display = enable ? 'flex' : 'none';
+            });
+
+            const espWarning = document.getElementById('esp-warning');
+            if (espWarning) {
+                espWarning.style.display = enable ? 'none' : 'block';
+            }
+
+            if (enable) {
+                await sendEspCommand('esplineon');
+                await sendEspCommand('espboxon');
+                await sendEspCommand('esphealth');
+                await sendEspCommand('espname');
+                document.querySelectorAll('.toggle-input[data-on-cmd="esplineon"]').forEach(t => { t.checked = true; });
+                document.querySelectorAll('.toggle-input[data-on-cmd="espboxon"]').forEach(t => { t.checked = true; });
+                document.querySelectorAll('.toggle-input[data-on-cmd="esphealth"]').forEach(t => { t.checked = true; });
+                document.querySelectorAll('.toggle-input[data-on-cmd="espname"]').forEach(t => { t.checked = true; });
+            } else {
+                await sendEspCommand('esplineoff');
+                await sendEspCommand('espboxoff');
+                await sendEspCommand('esphealthoff');
+                await sendEspCommand('espnameoff');
+                document.querySelectorAll('.toggle-input[data-on-cmd="esplineon"]').forEach(t => { t.checked = false; });
+                document.querySelectorAll('.toggle-input[data-on-cmd="espboxon"]').forEach(t => { t.checked = false; });
+                document.querySelectorAll('.toggle-input[data-on-cmd="esphealth"]').forEach(t => { t.checked = false; });
+                document.querySelectorAll('.toggle-input[data-on-cmd="espname"]').forEach(t => { t.checked = false; });
+            }
+        }
+
+        function updateEspUI() {
+            const master = document.getElementById('esp-master-toggle');
+            if (master) master.checked = settings.espEnabled;
+        }
+
+        // Send command to backend
+        async function sendCommand(command) {
+            const response = await fetch('/execute', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ command: command }),
+            });
+
+            const result = await response.json();
+            const outputText = result.output || "";
+            showNotification(outputText.trim() || `Command: ${command}`);
+
+            outputText.split("\n").forEach(line => {
+                if (line.trim()) updateConsole(line);
+            });
+            checkEspStatus();
+        }
+
+        async function sendEspCommand(command) {
+            const response = await fetch('/execute', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ command: command }),
+            });
+
+            const result = await response.json();
+            const outputText = result.output || "";
+            showNotification(outputText.trim() || `ESP: ${command}`);
+
+            outputText.split("\n").forEach(line => {
+                if (line.trim()) updateConsole(line);
+            });
+            checkEspStatus();
+        }
+
+        // Update Aim FOV
+        function updateAimFOV(value) {
+            document.getElementById('aimfov-value').textContent = value;
+            sendEspCommand(`aimfov:${value}`);
+            updateConsole(`Safe aim radius: ${value}px`);
+        }
+
+        function updateExtremeFOV(value) {
+            document.getElementById('extreme-fov-value').textContent = value;
+            sendEspCommand(`extremefov:${value}`);
+            updateConsole(`Extreme FOV: ${value}px`);
+        }
+
+        function updateAimDist(value) {
+            document.getElementById('aimdist-value').textContent = value;
+            sendEspCommand(`aimdist:${value}`);
+            updateConsole(`Aim distance: ${value}m`);
+        }
+
+        function updateAimSmooth(value) {
+            document.getElementById('aimsmooth-value').textContent = value;
+            sendEspCommand(`aimsmooth:${value}`);
+            updateConsole(`Aim smoothness: ${value}ms`);
+        }
+
+        // Update Silent Aim Mode
+        function updateSilentAimMode(modeIndex) {
+            sendEspCommand(`silentaim_mode:${modeIndex}`);
+            updateConsole(`Silent Aim mode set to: ${modeIndex}`);
+        }
+
+        // Update console
+        function updateConsole(message) {
+            const consoleElement = document.getElementById('console-output');
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            const fullMessage = `[${timeString}] ${message}`;
+
+            const logEntry = document.createElement('div');
+            logEntry.className = 'console-log';
+            logEntry.innerHTML = `<span class="time">${timeString} : </span><span class="message">${message}</span>`;
+
+            consoleElement.appendChild(logEntry);
+            consoleElement.scrollTop = consoleElement.scrollHeight;
+        }
+
+        // Shoulder selection
+        function selectShoulder(shoulder) {
+            selectedPosition = shoulder;
+            updateConsole(`Shoulder position set to: ${shoulder}`);
+
+            // Update combobox text
+            const shoulderBtn = document.getElementById('shoulder-btn');
+            if (shoulderBtn) {
+                shoulderBtn.textContent = shoulder === 'right' ? 'Right Shoulder' : 'Left Shoulder';
+            }
+
+            // Close menu
+            const shoulderMenu = document.getElementById('shoulder-menu');
+            if (shoulderMenu) {
+                shoulderMenu.classList.remove('open');
+            }
+        }
+
+        // Toggle shoulder aim
+        function toggleShoulderAim(enable) {
+            if (enable) {
+                sendCommand(selectedPosition + 'shoulderon');
+            } else {
+                sendCommand(selectedPosition + 'shoulderoff');
+            }
+        }
+
+        // Toggle headshot legit
+        function toggleHeadshotLegit(enable) {
+            if (enable) {
+                sendCommand(selectedPosition + 'shoulderon');
+            } else {
+                sendCommand(selectedPosition + 'shoulderoff');
+            }
+        }
+
+        // Scan enemies
+        function scanEnemies() {
+            updateConsole(`Aimbot Scan command received`);
+            sendCommand('aimbotscan');
+        }
+
+        // Update notification settings
+        function updateNotificationSettings(mode) {
+            settings.notificationMode = mode;
+            saveSettings();
+            updateNotificationUI();
+            updateConsole(`Notification mode set to: ${mode}`);
+        }
+
+        // Update notification UI (toggle)
+        function updateNotificationUI() {
+            const toggle = document.getElementById('notification-toggle');
+            if (!toggle) return;
+            toggle.checked = settings.notificationMode === 'notification';
+        }
+
+        // Toggle aimbot version
+        function toggleAimbotVersion(version) {
+            aimbotVersion = version;
+            updateConsole(`Aimbot version set to: ${version}`);
+        }
+
+        // Player status functions
+        async function checkPlayerStatus() {
+            try {
+                const startTime = performance.now();
+                const response = await fetch('/status');
+                const endTime = performance.now();
+                const ping = Math.round(endTime - startTime);
+                const result = await response.json();
+
+                const statusElement = document.getElementById('status');
+                const pingElement = document.getElementById('ping');
+                const statusBody = document.getElementById('status-body');
+
+                statusCheckCount++;
+
+                if (result.status === "online") {
+                    if (lastStatus !== "online") {
+                        if (statusElement) { statusElement.textContent = 'Online'; statusElement.className = 'status-indicator status-online'; }
+                        if (statusBody) statusBody.textContent = 'Connected to VISION X STREAMER';
+                        updateConsole("Process : Online");
+                        showNotification("Player is online");
+                        playSuccessVideo();
+                    }
+                    if (pingElement) pingElement.textContent = `• v1.7 (Pro) • ${ping} ms`;
+                } else {
+                    if (lastStatus !== "offline") {
+                        if (statusElement) { statusElement.textContent = 'Offline'; statusElement.className = 'status-indicator status-offline'; }
+                        if (statusBody) statusBody.textContent = 'Connected to VISION X STREAMER';
+                        updateConsole("Process : Offline");
+                        showNotification("Player is offline");
+                    }
+                    if (pingElement) pingElement.textContent = `• v1.7 (Pro) • ${ping} ms`;
+                }
+
+                lastStatus = result.status;
+
+            } catch (error) {
+                console.error('Error fetching status:', error);
+                const statusElement = document.getElementById('status');
+                const pingElement = document.getElementById('ping');
+                const statusBody = document.getElementById('status-body');
+                if (statusElement) { statusElement.textContent = 'Error'; statusElement.className = 'status-indicator status-error'; }
+                if (statusBody) statusBody.textContent = 'Connection error';
+                if (pingElement) pingElement.textContent = '• v7.7 (Pro) • -- ms';
+                updateConsole(`Status check error: ${error.message}`);
+            }
+        }
+
+        function playSuccessVideo() {
+            try {
+                const sound = document.getElementById('success-sound');
+                if (!sound) return;
+                if (soundEnabled) {
+                    sound.currentTime = 0;
+                    sound.volume = 1.0;
+                    sound.muted = false;
+                    sound.play().then(() => updateConsole('Success audio playing')).catch(e => updateConsole('Audio: ' + (e.message || 'blocked')));
+                }
+            } catch (err) { console.error('playSuccessVideo:', err); }
+        }
+
+        function startStatusMonitor() {
+            checkPlayerStatus();
+            playerStatusInterval = setInterval(checkPlayerStatus, 5000);
+        }
+
+        function stopStatusMonitor() {
+            if (playerStatusInterval) {
+                clearInterval(playerStatusInterval);
+            }
+        }
+
+
+        // Browser-only hotkeys (panel tab focused). Fullscreen game uses Win32 global hotkeys in Python.
+        document.addEventListener('keydown', function (event) {
+            if (!settings.hotkeysEnabled) return;
+            if (event.repeat) return;
+            if (document.hidden) return;
+
+            const key = event.key.toUpperCase();
+            const ctrl = event.ctrlKey;
+            const shift = event.shiftKey;
+            const alt = event.altKey;
+
+            // Helper to check if a hotkey matches
+            function matchesHotkey(hotkey) {
+                if (!hotkey) return false;
+
+                const parts = hotkey.split('+').map(p => p.trim().toUpperCase());
+                let hasCtrl = parts.includes('CTRL');
+                let hasShift = parts.includes('SHIFT');
+                let hasAlt = parts.includes('ALT');
+                let keyPart = parts.find(p => !['CTRL', 'SHIFT', 'ALT'].includes(p));
+
+                // Check modifiers
+                if (hasCtrl !== ctrl) return false;
+                if (hasShift !== shift) return false;
+                if (hasAlt !== alt) return false;
+
+                // Check key
+                if (keyPart && key !== keyPart) return false;
+
+                return true;
+            }
+
+            function toggleFeatureByOnCmd(onCmd) {
+                const checkbox = document.querySelector(`.toggle-input[data-on-cmd="${onCmd}"]`);
+                if (!checkbox) return false;
+                checkbox.checked = !checkbox.checked;
+                checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+                return true;
+            }
+
+            // Check all hotkeys
+            if (matchesHotkey(settings.hotkeyBindings.visible)) {
+                event.preventDefault();
+                toggleFeatureByOnCmd('aimbotvisible');
+            }
+            else if (matchesHotkey(settings.hotkeyBindings.rage)) {
+                event.preventDefault();
+                toggleFeatureByOnCmd('aimbotrage');
+            }
+            else if (matchesHotkey(settings.hotkeyBindings.connect)) {
+                event.preventDefault();
+                sendCommand('connectemu');
+            }
+            else if (matchesHotkey(settings.hotkeyBindings.logs)) {
+                event.preventDefault();
+                sendCommand('bypasspc');
+            }
+            else if (matchesHotkey(settings.hotkeyBindings.network)) {
+                event.preventDefault();
+                sendCommand('blockint');
+            }
+            else if (matchesHotkey(settings.hotkeyBindings.adb)) {
+                event.preventDefault();
+                sendCommand('connectemu');
+            }
+            else if (matchesHotkey(settings.hotkeyBindings.line)) {
+                event.preventDefault();
+                sendEspCommand('espline');
+            }
+            else if (matchesHotkey(settings.hotkeyBindings.box)) {
+                event.preventDefault();
+                sendEspCommand('espboxon');
+            }
+            else if (matchesHotkey(settings.hotkeyBindings.health)) {
+                event.preventDefault();
+                sendEspCommand('esphealth');
+            }
+            else if (matchesHotkey(settings.hotkeyBindings.name)) {
+                event.preventDefault();
+                toggleFeatureByOnCmd('espname');
+            }
+            else if (matchesHotkey(settings.hotkeyBindings.skeleton)) {
+                event.preventDefault();
+                toggleFeatureByOnCmd('espskeleton');
+            }
+        });
+
+        // Connected Particles Canvas Animation
+        function initConnectedParticles() {
+            const canvas = document.getElementById('particles-canvas');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const particleCount = 50;
+            const connectionDistance = 150;
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.vx = (Math.random() - 0.5) * 0.5;
+                    this.vy = (Math.random() - 0.5) * 0.5;
+                    this.radius = Math.random() * 2 + 1;
+                }
+
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                    if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+
+                    this.x = Math.max(0, Math.min(canvas.width, this.x));
+                    this.y = Math.max(0, Math.min(canvas.height, this.y));
+                }
+
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius * 3);
+                    gradient.addColorStop(0, 'rgba(255, 0, 0, 1)');
+                    gradient.addColorStop(0.5, 'rgba(220, 20, 60, 0.8)');
+                    gradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
+                    ctx.fillStyle = gradient;
+                    ctx.fill();
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = 'rgba(255, 0, 0, 0.8)';
+                }
+            }
+
+            // Create particles
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+
+            function drawConnections() {
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+
+                        if (distance < connectionDistance) {
+                            const opacity = (1 - distance / connectionDistance) * 0.3;
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.strokeStyle = `rgba(220, 20, 60, ${opacity})`;
+                            ctx.lineWidth = 1;
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                particles.forEach(particle => {
+                    particle.update();
+                    particle.draw();
+                });
+
+                drawConnections();
+
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            // Starfall dots (3 colors)
+            (() => {
+                const wrap = document.getElementById('starfall');
+                if (!wrap) return;
+
+                const STAR_COUNT = 70;
+                const colors = ['star-red', 'star-white', 'star-gray'];
+                const rand = (min, max) => Math.random() * (max - min) + min;
+
+                for (let i = 0; i < STAR_COUNT; i++) {
+                    const el = document.createElement('div');
+                    el.className = `star ${colors[i % colors.length]}`;
+
+                    const size = rand(2, 4.2).toFixed(2) + 'px';
+                    const opacity = rand(0.35, 0.9).toFixed(2);
+                    const duration = rand(6, 14).toFixed(2) + 's';
+                    const delay = (-rand(0, 14)).toFixed(2) + 's';
+                    const x = rand(0, 100).toFixed(2) + 'vw';
+                    const drift = rand(-18, 18).toFixed(2) + 'vw';
+
+                    el.style.setProperty('--s', size);
+                    el.style.setProperty('--o', opacity);
+                    el.style.setProperty('--d', duration);
+                    el.style.setProperty('--delay', delay);
+                    el.style.setProperty('--x', x);
+                    el.style.setProperty('--drift', drift);
+
+                    wrap.appendChild(el);
+                }
+            })();
+
+            // About dev images: load from HEX txt via /devimage-hex
+            function hexStringToBytes(hexText) {
+                if (!hexText) return new Uint8Array(0);
+                // Remove 0x, commas and non-hex chars, keep only 0-9a-f
+                const cleaned = hexText
+                    .replace(/0x/gi, '')
+                    .replace(/[^0-9a-fA-F]/g, '');
+                const len = cleaned.length;
+                const bytes = new Uint8Array(len / 2);
+                for (let i = 0; i < len; i += 2) {
+                    bytes[i / 2] = parseInt(cleaned.substr(i, 2), 16);
+                }
+                return bytes;
+            }
+
+            async function loadDevHexImage(imgId, hexFile) {
+                try {
+                    const imgEl = document.getElementById(imgId);
+                    if (!imgEl) return;
+                    const res = await fetch('/devimage-hex/' + encodeURIComponent(hexFile));
+                    if (!res.ok) return;
+                    const data = await res.json();
+                    if (!data.hexData) return;
+                    const bytes = hexStringToBytes(data.hexData);
+                    if (!bytes.length) return;
+                    const blob = new Blob([bytes], { type: 'image/jpeg' });
+                    const url = URL.createObjectURL(blob);
+                    imgEl.src = url;
+                } catch (e) {
+                    console.error('Failed to load dev image', imgId, e);
+                }
+            }
+
+            // KANISHK (KC IMAGE HEX.txt) & HARSH (image 2.txt)
+            loadDevHexImage('about-img-shark', 'KC IMAGE HEX.txt');
+            loadDevHexImage('about-img-harsh', 'image 2.txt');
+
+            // About tab shuffle text (random character spin → final text)
+            (function () {
+                const el = document.getElementById('about-shuffle-text');
+                if (!el) return;
+
+                const messages = [
+                    'WELCOME TO VISION X STREAMER',
+                    'ANTI BAN PANEL',
+                    'VISION X STREAMER v1.5'
+                ];
+                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%&';
+                let index = 0;
+
+                function scrambleTo(target, durationMs = 700, frameMs = 40) {
+                    const steps = Math.max(4, Math.floor(durationMs / frameMs));
+                    let frame = 0;
+                    const targetLen = target.length;
+
+                    const timer = setInterval(() => {
+                        frame++;
+                        let out = '';
+
+                        for (let i = 0; i < targetLen; i++) {
+                            const progress = frame / steps;
+                            const lockThreshold = progress * targetLen;
+
+                            if (i < lockThreshold) {
+                                out += target[i];
+                            } else {
+                                out += chars[Math.floor(Math.random() * chars.length)];
+                            }
+                        }
+
+                        el.textContent = out;
+
+                        if (frame >= steps) {
+                            clearInterval(timer);
+                            el.textContent = target;
+                        }
+                    }, frameMs);
+                }
+
+                function cycle() {
+                    const next = (index + 1) % messages.length;
+                    index = next;
+                    scrambleTo(messages[next]);
+                }
+
+                // Start with first phrase instantly
+                el.textContent = messages[0];
+                // then spin to next ones
+                setInterval(cycle, 2600);
+            })();
+
+            initConnectedParticles();
+            loadSoundPrefs();
+            updateSoundButtonUI();
+
+            // Premium click feedback (emoji burst)
+            (() => {
+                const emojiPool = ['🔥', '💥', '⚡️', '🟥', '🎯', '💢', '🔴'];
+
+                function spawnEmojiBurst(x, y, count = 5) {
+                    const safeX = Number.isFinite(x) ? x : window.innerWidth / 2;
+                    const safeY = Number.isFinite(y) ? y : window.innerHeight / 2;
+
+                    for (let i = 0; i < count; i++) {
+                        const el = document.createElement('div');
+                        el.className = 'emoji-burst';
+
+                        const emoji = emojiPool[Math.floor(Math.random() * emojiPool.length)];
+                        el.textContent = emoji;
+                        el.style.setProperty('--x', safeX + 'px');
+                        el.style.setProperty('--y', safeY + 'px');
+
+                        const dx = (Math.random() - 0.5) * 60;
+                        const dy = (-10 - Math.random() * 45);
+                        el.style.setProperty('--dx', dx + 'px');
+                        el.style.setProperty('--dy', dy + 'px');
+
+                        document.body.appendChild(el);
+                        setTimeout(() => el.remove(), 900);
+                    }
+                }
+
+                document.addEventListener('click', (e) => {
+                    const btn = e.target && e.target.closest
+                        ? e.target.closest('.btn, .tab-btn, .menu-btn, .sound-toggle-btn, .shoulder-btn')
+                        : null;
+                    if (!btn) return;
+                    if (e.defaultPrevented) return;
+
+                    const r = btn.getBoundingClientRect();
+                    const x = r.left + r.width / 2;
+                    const y = r.top + r.height / 2;
+                    const burstCount = 4 + Math.floor(Math.random() * 4);
+                    spawnEmojiBurst(x, y, burstCount);
+                }, { passive: true });
+            })();
+
+            // Was a login just completed? If yes, request sound on index.
+            try {
+                if (localStorage.getItem('playLoginSuccessSound') === '1') {
+                    pendingLoginSuccessSound = true;
+                    localStorage.removeItem('playLoginSuccessSound');
+
+                    // User intent: play sound on index open.
+                    // We mark sound as enabled and immediately attempt playback.
+                    soundEnabled = true;
+                    saveSoundPrefs();
+                }
+            } catch (e) { }
+
+            // Button to enable sound (user gesture)
+            const soundBtn = document.getElementById('sound-toggle');
+            if (soundBtn) {
+                soundBtn.addEventListener('click', async () => {
+                    if (!soundEnabled) {
+                        soundEnabled = true;
+                        saveSoundPrefs();
+                        updateSoundButtonUI();
+                    }
+
+                    // "Unlock" audio on gesture for Chrome/Edge and (if needed) play login sound.
+                    const sound = document.getElementById('success-sound');
+                    if (sound) {
+                        try {
+                            // If login requested sound, play it NOW within this user gesture.
+                            if (pendingLoginSuccessSound) {
+                                try { sound.load(); } catch (e) { }
+                                sound.pause();
+                                sound.currentTime = 0;
+                                sound.volume = 1.0;
+                                sound.muted = false;
+                                await sound.play();
+                                pendingLoginSuccessSound = false;
+                            } else {
+                                // Otherwise just unlock audio for later usage.
+                                await sound.play();
+                                sound.pause();
+                                sound.currentTime = 0;
+                            }
+                        } catch (e) { }
+                    }
+                });
+            }
+
+            // Tab switcher (new)
+            const TabSwitcher = (() => {
+                const ORDER = ['headshot', 'esp', 'settings', 'about'];
+                const rail = document.getElementById('tab-rail');
+                const indicator = document.getElementById('tab-indicator');
+                const mainContainer = document.querySelector('.main-container');
+                const backButton = document.getElementById('about-back-btn');
+                const buttons = ORDER.map(id => document.querySelector(`.tab-btn[data-tab="${id}"]`)).filter(Boolean);
+                const panels = ORDER.map(id => document.getElementById(id)).filter(Boolean);
+                let current = 'headshot';
+                let animating = false;
+
+                function moveIndicator(btn) {
+                    if (!indicator || !btn || !rail) return;
+                    const railRect = rail.getBoundingClientRect();
+                    const btnRect = btn.getBoundingClientRect();
+                    indicator.style.width = `${btnRect.width}px`;
+                    indicator.style.transform = `translateX(${btnRect.left - railRect.left}px)`;
+                }
+
+                function setAboutChrome(isAbout) {
+                    if (mainContainer) mainContainer.classList.toggle('about-view', isAbout);
+                    const aboutBtn = document.getElementById('tab-about');
+                    if (aboutBtn) aboutBtn.style.display = isAbout ? 'none' : '';
+                    if (indicator) indicator.style.opacity = isAbout ? '0' : '1';
+                    if (backButton) backButton.style.display = isAbout ? 'inline-flex' : 'none';
+                }
+
+                function activatePanel(id) {
+                    panels.forEach(panel => {
+                        const on = panel.id === id;
+                        panel.classList.toggle('active', on);
+                        panel.hidden = !on;
+                    });
+                }
+
+                function switchTo(tabId, { animate = true } = {}) {
+                    if (!ORDER.includes(tabId) || tabId === current || animating) return;
+                    const prevPanel = document.getElementById(current);
+                    const nextPanel = document.getElementById(tabId);
+                    const nextBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+                    if (!nextPanel || !nextBtn) return;
+
+                    animating = true;
+                    buttons.forEach(btn => {
+                        const on = btn.dataset.tab === tabId;
+                        btn.classList.toggle('active', on);
+                        btn.setAttribute('aria-selected', on ? 'true' : 'false');
+                    });
+                    moveIndicator(nextBtn);
+                    setAboutChrome(tabId === 'about');
+
+                    const finish = () => {
+                        activatePanel(tabId);
+                        current = tabId;
+                        animating = false;
+                    };
+
+                    if (animate && prevPanel && nextPanel) {
+                        prevPanel.classList.add('leaving');
+                        prevPanel.classList.remove('active');
+                        setTimeout(() => {
+                            prevPanel.classList.remove('leaving');
+                            prevPanel.hidden = true;
+                            nextPanel.hidden = false;
+                            nextPanel.classList.add('active');
+                            setTimeout(finish, 400);
+                        }, 220);
+                    } else {
+                        finish();
+                    }
+                }
+
+                buttons.forEach(btn => {
+                    btn.addEventListener('click', () => switchTo(btn.dataset.tab));
+                });
+
+                if (backButton) {
+                    backButton.addEventListener('click', () => switchTo('headshot'));
+                }
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.target.matches('input, textarea, select')) return;
+                    const idx = ORDER.indexOf(current);
+                    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        switchTo(ORDER[(idx + 1) % ORDER.length]);
+                    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        switchTo(ORDER[(idx - 1 + ORDER.length) % ORDER.length]);
+                    } else if (e.key >= '1' && e.key <= '4') {
+                        switchTo(ORDER[parseInt(e.key, 10) - 1]);
+                    }
+                });
+
+                window.addEventListener('resize', () => {
+                    const activeBtn = document.querySelector('.tab-btn.active');
+                    if (activeBtn) moveIndicator(activeBtn);
+                });
+
+                activatePanel('headshot');
+                moveIndicator(document.querySelector('.tab-btn.active'));
+                setAboutChrome(false);
+
+                return { switchTo };
+            })();
+
+            window.panelTabs = TabSwitcher;
+
+            // Button groups (remaining Connect/Bypass etc)
+            const btnGroups = document.querySelectorAll('.btn-group');
+            btnGroups.forEach(group => {
+                const buttons = group.querySelectorAll('.btn');
+                buttons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        buttons.forEach(btn => {
+                            btn.classList.remove('btn-primary');
+                            btn.classList.add('btn-secondary');
+                        });
+                        button.classList.remove('btn-secondary');
+                        button.classList.add('btn-primary');
+                    });
+                });
+            });
+
+            // Toggle switch handler
+            document.querySelectorAll('.toggle-input').forEach(toggle => {
+                toggle.addEventListener('change', function () {
+                    const onCmd = this.dataset.onCmd;
+                    const offCmd = this.dataset.offCmd;
+                    const type = this.dataset.type || 'cmd';
+                    const cmd = this.checked ? onCmd : offCmd;
+                    if (type === 'notification') {
+                        updateNotificationSettings(this.checked ? 'notification' : 'off');
+                        return;
+                    }
+                    if (type === 'esp') sendEspCommand(cmd);
+                    else sendCommand(cmd);
+                });
+            });
+
+            // Console toggle
+            const consoleHeader = document.querySelector('.console-header');
+            const consoleBody = document.querySelector('.console-body');
+            if (consoleHeader && consoleBody) {
+                const consoleIcon = consoleHeader.querySelector('i');
+                consoleHeader.addEventListener('click', () => {
+                    consoleBody.classList.toggle('hidden');
+                    if (consoleIcon) consoleIcon.classList.toggle('collapsed');
+                });
+            }
+
+            // Shoulder menu
+            const shoulderMenu = document.getElementById('shoulder-menu');
+            const shoulderBtn = document.getElementById('shoulder-btn');
+            if (shoulderBtn && shoulderMenu) {
+                shoulderBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    shoulderMenu.classList.toggle('open');
+                });
+                document.addEventListener('click', () => shoulderMenu.classList.remove('open'));
+                shoulderMenu.addEventListener('click', (e) => e.stopPropagation());
+            }
+
+            // Initialize UI
+            updateNotificationUI();
+            updateEspUI();
+            toggleEsp(settings.espEnabled);
+            initHotkeyDisplays();
+            syncHotkeyInputsFromSettings();
+            initHotkeyInputListeners();
+            loadGlobalHotkeysFromServer();
+
+            const espMaster = document.getElementById('esp-master-toggle');
+            if (espMaster) {
+                espMaster.addEventListener('change', () => toggleEsp(espMaster.checked));
+            }
+
+            const hotkeysToggle = document.getElementById('hotkeys-enabled-toggle');
+            if (hotkeysToggle) {
+                hotkeysToggle.checked = settings.hotkeysEnabled !== false;
+                hotkeysToggle.addEventListener('change', () => toggleHotkeys(hotkeysToggle.checked));
+            }
+
+            document.querySelectorAll('.hotkey-row').forEach(row => {
+                const bind = row.dataset.bind;
+                const input = row.querySelector('.hk-input');
+                const btn = row.querySelector('.hk-set-btn');
+                if (btn && bind) {
+                    btn.addEventListener('click', () => startHotkeyCapture(input, bind));
+                }
+            });
+
+            const saveHotkeysBtn = document.getElementById('save-hotkeys-btn');
+            if (saveHotkeysBtn) saveHotkeysBtn.addEventListener('click', saveHotkeySettings);
+
+            checkEspStatus();
+            setInterval(checkEspStatus, 5000);
+
+            // Start player status monitoring
+            startStatusMonitor();
+
+            // Play login success sound on index load (if requested by login)
+            // Note: if sound isn't enabled yet, user can click the button to play.
+            updateSoundButtonUI();
+            setupAutoplayFallbackGestures();
+            tryAutoplayBurst();
+
+            // Top menu: logout + about devs
+            const menuBtn = document.querySelector('.menu-btn');
+            const menu = document.getElementById('top-menu');
+            const devsModal = document.getElementById('devs-modal');
+            const devsClose = document.getElementById('devs-close');
+
+            if (menuBtn && menu) {
+                menuBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    menu.classList.toggle('open');
+                });
+
+                document.addEventListener('click', () => {
+                    menu.classList.remove('open');
+                });
+
+                menu.addEventListener('click', (e) => e.stopPropagation());
+
+                // Logout
+                const logoutItem = document.getElementById('menu-logout');
+                if (logoutItem) {
+                    logoutItem.addEventListener('click', () => {
+                        window.location.href = '/logout';
+                    });
+                }
+
+                // About devs
+                const devsItem = document.getElementById('menu-devs');
+                const openDevs = () => {
+                    if (devsModal) {
+                        devsModal.classList.add('open');
+                        menu.classList.remove('open');
+                    }
+                };
+
+                if (devsItem) {
+                    devsItem.addEventListener('click', openDevs);
+                }
+
+                if (devsModal) {
+                    devsModal.addEventListener('click', (e) => {
+                        if (e.target === devsModal) devsModal.classList.remove('open');
+                    });
+                }
+                if (devsClose) {
+                    devsClose.addEventListener('click', () => {
+                        devsModal.classList.remove('open');
+                    });
+                }
+
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        if (devsModal && devsModal.classList.contains('open')) {
+                            devsModal.classList.remove('open');
+                        } else {
+                            window.location.href = '/logout';
+                        }
+                    }
+                    if (e.key === 'F3') {
+                        e.preventDefault();
+                        openDevs();
+                    }
+                });
+            }
+
+            updateConsole("Welcome to VISION X STREAMER");
+        });
+    </script>
+</body>
+</html>
