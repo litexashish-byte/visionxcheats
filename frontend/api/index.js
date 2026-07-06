@@ -224,7 +224,7 @@ app.get('/api/settings', async (req, res) => {
 
 // Health
 app.get('/api/health', (req, res) => {
-  res.json({ success: true, message: 'VISION X CHEATS API', mode: global.isDemoMode ? 'demo' : 'production', timestamp: new Date().toISOString(), routes: loadedRoutes.length, demoPanelsCount: global.isDemoMode ? demoDB.freePanels.length : 'N/A' });
+  res.json({ success: true, message: 'VISION X CHEATS API', mode: global.isDemoMode ? 'demo' : 'production', mongoReady: global._mongoReady, mongoUri: process.env.MONGODB_URI ? 'SET' : 'NOT_SET', timestamp: new Date().toISOString(), routes: loadedRoutes.length, demoPanelsCount: global.isDemoMode ? demoDB.freePanels.length : 'N/A' });
 });
 
 // Debug: test freePanels directly
