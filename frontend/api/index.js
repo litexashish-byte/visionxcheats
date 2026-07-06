@@ -18,6 +18,7 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 // Try MongoDB connection, fallback to demo mode if it fails
 global.isDemoMode = true;
 global._mongoReady = false;
+global._mongoError = null;
 if (process.env.MONGODB_URI) {
   const mongoose = require('mongoose');
   mongoose.set('bufferCommands', false);
@@ -31,6 +32,7 @@ if (process.env.MONGODB_URI) {
   }).catch((e) => {
     global.isDemoMode = true;
     global._mongoReady = false;
+    global._mongoError = e.message;
     console.log('[DB] MongoDB failed, using DEMO mode:', e.message);
   });
 }
@@ -224,7 +226,7 @@ app.get('/api/settings', async (req, res) => {
 
 // Health
 app.get('/api/health', (req, res) => {
-  res.json({ success: true, message: 'VISION X CHEATS API', mode: global.isDemoMode ? 'demo' : 'production', mongoReady: global._mongoReady, mongoUri: process.env.MONGODB_URI ? 'SET' : 'NOT_SET', timestamp: new Date().toISOString(), routes: loadedRoutes.length, demoPanelsCount: global.isDemoMode ? demoDB.freePanels.length : 'N/A' });
+  res.json({ success: true, message: 'VISION X CHEATS API', mode: global.isDemoMode ? 'demo' : 'production', mongoReady: global._mongoReady, mongoError: global._mongoError, mongoUri: process.env.MONGODB_URI ? 'SET' : 'NOT_SET', timestamp: new Date().toISOString(), routes: loadedRoutes.length, demoPanelsCount: global.isDemoMode ? demoDB.freePanels.length : 'N/A' });
 });
 
 // Debug: test freePanels directly
